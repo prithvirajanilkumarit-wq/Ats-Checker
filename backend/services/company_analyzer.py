@@ -90,7 +90,6 @@ def _build_sources(company_name: str) -> List[Dict[str, Any]]:
     ]
 
 
-@retry(stop=stop_after_attempt(2), wait=wait_exponential(multiplier=1, min=2, max=6))
 async def _gemini_company_analysis(
     company_name: str,
     sources: List[Dict],
@@ -136,7 +135,7 @@ Return ONLY valid JSON."""
         }
     }
 
-    async with httpx.AsyncClient(timeout=25.0) as client:
+    async with httpx.AsyncClient(timeout=6.0) as client:
         response = await client.post(url, json=payload)
         response.raise_for_status()
         res_json = response.json()

@@ -39,13 +39,12 @@ async def generate_suggestions(
     return _rule_based_suggestions(ats_data)
 
 
-@retry(stop=stop_after_attempt(2), wait=wait_exponential(multiplier=0.5, min=1, max=2))
 async def _gemini_suggestions(
     resume_text: str,
     jd_text: str,
     ats_data: Dict[str, Any],
 ) -> Dict[str, Any]:
-    """Call Google Gemini Pro API for detailed resume suggestions."""
+    """Call Google Gemini Pro API for detailed resume suggestions with fast fallback."""
     import httpx
     import json
 
@@ -89,7 +88,7 @@ Return ONLY valid JSON. No markdown, no explanation."""
         }
     }
 
-    async with httpx.AsyncClient(timeout=15.0) as client:
+    async with httpx.AsyncClient(timeout=6.0) as client:
         response = await client.post(url, json=payload)
         response.raise_for_status()
         res_json = response.json()
