@@ -28,7 +28,7 @@ class Settings(BaseSettings):
 
     # ── Gemini ───────────────────────────────────────────────────────────────
     GEMINI_API_KEY: str = ""
-    GEMINI_MODEL: str = "gemini-3.6-flash"
+    GEMINI_MODEL: str = "gemini-1.5-flash"
 
     # ── OpenAI ───────────────────────────────────────────────────────────────
     OPENAI_API_KEY: str = ""
@@ -90,12 +90,12 @@ class Settings(BaseSettings):
     @property
     def has_gemini(self) -> bool:
         key = self.GEMINI_API_KEY.strip()
-        return bool(key) and not key.startswith("your_") and "change-me" not in key
+        return bool(key) and key.startswith("AIzaSy")
 
     @property
     def has_openai(self) -> bool:
         key = self.OPENAI_API_KEY.strip()
-        return bool(key) and not key.startswith("your_") and not key.startswith("sk-your") and "change-me" not in key
+        return bool(key) and key.startswith("sk-") and not key.startswith("sk-your")
 
     @property
     def has_ai(self) -> bool:
