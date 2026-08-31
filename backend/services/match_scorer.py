@@ -89,20 +89,12 @@ def calculate_match_score(
 
 
 def _semantic_similarity(text1: str, text2: str) -> float:
-    """Calculate semantic similarity using SentenceTransformer or TF-IDF fallback."""
-    model = _get_model()
-
-    if model == "fallback":
-        return _tfidf_similarity(text1, text2)
-
+    """Calculate semantic similarity using high-speed TF-IDF cosine similarity (prevents memory OOM on 512MB free tier)."""
     try:
-        emb1 = model.encode(text1[:3000], convert_to_tensor=False)
-        emb2 = model.encode(text2[:3000], convert_to_tensor=False)
-        sim = _cosine_similarity_numpy(emb1, emb2)
-        return sim * 100
-    except Exception as e:
-        logger.warning(f"Semantic similarity error: {e}. Using TF-IDF fallback.")
         return _tfidf_similarity(text1, text2)
+    except Exception as e:
+        logger.warning(f"Semantic similarity fallback error: {e}")
+        return 50.0
 
 
 def _tfidf_similarity(text1: str, text2: str) -> float:
