@@ -432,8 +432,15 @@ export default function ResumeAnalyzerPage() {
       const res = await runAnalysis(resumeId, jdId)
       setAnalysis(res.data)
     } catch (e) {
-      setError(e.message)
-      setStep(1)
+      const msg = e.message || 'Analysis failed. Please try again.'
+      if (msg.includes('not found') || msg.includes('404')) {
+        setError('Resume session expired on server restart. Please re-upload your resume.')
+        setStep(0)
+        setResume(null)
+      } else {
+        setError(msg)
+        setStep(1)
+      }
     } finally {
       setRunning(false)
     }
