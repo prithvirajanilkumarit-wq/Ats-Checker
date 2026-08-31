@@ -19,12 +19,22 @@ logger = get_logger(__name__)
 async def lifespan(app: FastAPI):
     """Application lifespan: startup and shutdown events."""
     logger.info("🚀 Starting AI Resume & Job Match Analyzer API...")
-    await create_tables()
-    logger.info("✅ Database tables created/verified.")
-    # Pre-warm SentenceTransformer model in background thread for fast first-request analysis
+    try:
+        await create_tables()
+        logger.info("✅ Database tables created/verified.")
+    except Exception as e:
+        logger.error(f"Database setup note: {e}")
+
+    # Safely pre-warm model in background
+    async def _safe_prewarm():
+        try:
+            from backend.services.match_scorer import _get_model
+            await asyncio.to_thread(_get_model)
+        except Exception as e:
+            logger.warning(f"Background model pre-warm note: {e}")
+
     import asyncio
-    from backend.services.match_scorer import _get_model
-    asyncio.create_task(asyncio.to_thread(_get_model))
+    asyncio.create_task(_safe_prewarm())
     yield
     logger.info("🛑 Shutting down API server.")
 
