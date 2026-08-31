@@ -175,7 +175,6 @@ Return ONLY valid JSON."""
         return data
 
 
-@retry(stop=stop_after_attempt(2), wait=wait_exponential(multiplier=1, min=2, max=6))
 async def _openai_company_analysis(
     company_name: str,
     sources: List[Dict],

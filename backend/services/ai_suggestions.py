@@ -114,13 +114,12 @@ Return ONLY valid JSON. No markdown, no explanation."""
         return _rule_based_suggestions(ats_data)
 
 
-@retry(stop=stop_after_attempt(3), wait=wait_exponential(multiplier=1, min=2, max=10))
 async def _openai_suggestions(
     resume_text: str,
     jd_text: str,
     ats_data: Dict[str, Any],
 ) -> Dict[str, Any]:
-    """Call OpenAI API for detailed resume suggestions."""
+    """Call OpenAI API for detailed resume suggestions with fast fallback."""
     from openai import AsyncOpenAI
 
     client = AsyncOpenAI(api_key=settings.OPENAI_API_KEY)
