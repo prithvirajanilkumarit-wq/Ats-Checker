@@ -102,7 +102,6 @@ async def run_analysis(body: AnalysisRequest, db: AsyncSession = Depends(get_db)
 
     db.add(analysis)
     await db.commit()
-    await db.refresh(analysis)
 
     logger.info(f"Analysis complete. ID: {analysis.id}. ATS: {analysis.ats_score} Match: {analysis.match_score}")
 
