@@ -1,0 +1,25 @@
+services:
+  - type: web
+    name: ats-backend
+    env: python
+    buildCommand: pip install -r backend/requirements.txt
+    startCommand: uvicorn backend.main:app --host 0.0.0.0 --port $PORT
+    envVars:
+      - key: GEMINI_MODEL
+        value: gemini-3.6-flash
+      - key: GEMINI_API_KEY
+        sync: false
+      - key: ENABLE_AI_SUGGESTIONS
+        value: "true"
+      - key: AI_FALLBACK_MODE
+        value: "true"
+
+  - type: web
+    name: ats-frontend
+    env: static
+    buildCommand: cd frontend && npm install && npm run build
+    staticPublishPath: ./frontend/dist
+    routes:
+      - type: rewrite
+        source: /*
+        destination: /index.html
