@@ -37,16 +37,18 @@ async def analyze_company(
         if settings.has_gemini:
             try:
                 logger.info(f"Analyzing company '{company_name}' via Google Gemini Pro...")
-                return await _gemini_company_analysis(company_name, sources)
+                import asyncio
+                return await asyncio.wait_for(_gemini_company_analysis(company_name, sources), timeout=4.5)
             except Exception as e:
-                logger.warning(f"Gemini Pro company analysis failed: {e}. Trying fallback.")
+                logger.warning(f"Gemini Pro company analysis note: {e}. Using fast rule-based data.")
 
         if settings.has_openai:
             try:
                 logger.info(f"Analyzing company '{company_name}' via OpenAI GPT-4...")
-                return await _openai_company_analysis(company_name, sources)
+                import asyncio
+                return await asyncio.wait_for(_openai_company_analysis(company_name, sources), timeout=4.5)
             except Exception as e:
-                logger.warning(f"OpenAI company analysis failed: {e}. Using fallback.")
+                logger.warning(f"OpenAI company analysis note: {e}. Using fast rule-based data.")
 
     return _rule_based_company_data(company_name, sources)
 
