@@ -1,48 +1,14 @@
 """
-Resume Match Scorer — Sentence Transformers cosine similarity + rule-based matching
+Resume Match Scorer — High-speed TF-IDF Cosine Similarity + Rule-based matching
 """
 from typing import Dict, Any, List, Tuple
 from backend.utils.nlp_utils import extract_skills, extract_tech_skills
 from backend.utils.logger import get_logger
+from sklearn.feature_extraction.text import TfidfVectorizer
+from sklearn.metrics.pairwise import cosine_similarity
 import math
 
 logger = get_logger(__name__)
-
-# Lazy-loaded model
-_model = None
-
-
-def _get_model():
-    """Lazy load Sentence Transformer model with fast fallback handling."""
-    global _model
-    if _model is None:
-        try:
-            import os
-            if os.environ.get("TRANSFORMERS_OFFLINE") == "1":
-                _model = "fallback"
-                return _model
-            os.environ.setdefault("HF_HUB_DISABLE_SYMLINKS_WARNING", "1")
-            from sentence_transformers import SentenceTransformer
-            try:
-                _model = SentenceTransformer("all-MiniLM-L6-v2", local_files_only=True)
-            except Exception:
-                _model = SentenceTransformer("all-MiniLM-L6-v2")
-            logger.info("SentenceTransformer model loaded successfully.")
-        except Exception as e:
-            logger.warning(f"SentenceTransformer unavailable ({e}). Using TF-IDF similarity fallback.")
-            _model = "fallback"
-    return _model
-
-
-def _cosine_similarity_numpy(a, b) -> float:
-    """Cosine similarity between two vectors."""
-    import numpy as np
-    a = np.array(a)
-    b = np.array(b)
-    denom = np.linalg.norm(a) * np.linalg.norm(b)
-    if denom == 0:
-        return 0.0
-    return float(np.dot(a, b) / denom)
 
 
 def calculate_match_score(
@@ -52,11 +18,11 @@ def calculate_match_score(
 ) -> Dict[str, Any]:
     """
     Calculate Resume Match Score using:
-      - Semantic similarity (Sentence Transformers)
+      - High-speed TF-IDF Cosine Similarity (ultra-lightweight memory footprint)
       - ATS component scores (weighted)
-      - Skills overlap
+      - Skills overlap & gap analysis
     """
-    # 1. Semantic similarity
+    # 1. Semantic TF-IDF similarity
     semantic_score = _semantic_similarity(resume_text, jd_text)
 
     # 2. Weighted score from ATS components
@@ -89,98 +55,66 @@ def calculate_match_score(
 
 
 def _semantic_similarity(text1: str, text2: str) -> float:
-    """Calculate semantic similarity using high-speed TF-IDF cosine similarity (prevents memory OOM on 512MB free tier)."""
+    """Calculate semantic similarity using high-speed TF-IDF cosine similarity."""
+    if not text1.strip() or not text2.strip():
+        return 0.0
     try:
-        return _tfidf_similarity(text1, text2)
+        vectorizer = TfidfVectorizer(stop_words="english", ngram_range=(1, 2))
+        tfidf_matrix = vectorizer.fit_transform([text1, text2])
+        sim = cosine_similarity(tfidf_matrix[0:1], tfidf_matrix[1:2])[0][0]
+        return round(float(sim) * 100, 1)
     except Exception as e:
-        logger.warning(f"Semantic similarity fallback error: {e}")
-        return 50.0
-
-
-def _tfidf_similarity(text1: str, text2: str) -> float:
-    """TF-IDF cosine similarity as fallback."""
-    try:
-        from sklearn.feature_extraction.text import TfidfVectorizer
-        from sklearn.metrics.pairwise import cosine_similarity
-        vectorizer = TfidfVectorizer(stop_words='english', max_features=500)
-        matrix = vectorizer.fit_transform([text1[:5000], text2[:5000]])
-        sim = cosine_similarity(matrix[0:1], matrix[1:2])[0][0]
-        return float(sim) * 100
-    except Exception as e:
-        logger.error(f"TF-IDF fallback also failed: {e}")
+        logger.warning(f"Semantic similarity warning: {e}")
         return 50.0
 
 
 def _score_to_category(score: float) -> str:
-    """Convert numeric score to categorical label."""
     if score >= 80:
-        return "Very High"
+        return "Very High Match"
     elif score >= 60:
-        return "High"
+        return "High Match"
     elif score >= 40:
-        return "Medium"
+        return "Medium Match"
     else:
-        return "Low"
+        return "Low Match"
 
 
 def _generate_reasons(
-    ats_data: Dict[str, Any],
+    ats: Dict[str, Any],
     final_score: float,
 ) -> Tuple[List[str], List[str], List[str]]:
-    """
-    Generate human-readable match reasons, strengths, and weaknesses.
-    """
     reasons = []
     strengths = []
     weaknesses = []
 
-    # Skills
-    matched_skills = ats_data.get("matched_skills", [])
-    missing_skills = ats_data.get("missing_skills", [])
+    skills_score = ats.get("skills_match_score", 0)
+    exp_score = ats.get("experience_match_score", 0)
+    fmt_score = ats.get("formatting_score", 0)
+    matched = ats.get("matched_skills", [])
+    missing = ats.get("missing_skills", [])
 
-    if matched_skills:
-        top_matched = matched_skills[:5]
-        strengths.append(f"Strong skill match: {', '.join(top_matched)}")
-        reasons.append(f"✅ Matched skills: {', '.join(top_matched)}")
+    if skills_score >= 70:
+        strengths.append(f"Strong skill alignment — {len(matched)} key skills matched.")
+    else:
+        weaknesses.append(f"Missing {len(missing)} required skills specified in the job posting.")
 
-    if missing_skills:
-        top_missing = missing_skills[:5]
-        weaknesses.append(f"Missing skills: {', '.join(top_missing)}")
-        reasons.append(f"❌ Missing skills: {', '.join(top_missing)}")
-
-    # Experience
-    exp_score = ats_data.get("experience_match_score", 0)
     if exp_score >= 80:
-        strengths.append("Experience level meets job requirements")
-        reasons.append("✅ Relevant experience detected")
-    elif exp_score < 50:
-        weaknesses.append("Experience level may not meet requirements")
-        reasons.append("⚠️ Limited relevant experience")
+        strengths.append("Experience matches or exceeds job requirements.")
+    elif exp_score >= 50:
+        strengths.append("Partial experience overlap with requirement.")
+    else:
+        weaknesses.append("Experience duration appears lower than required.")
 
-    # Education
-    edu_score = ats_data.get("education_match_score", 0)
-    if edu_score >= 80:
-        strengths.append("Education qualification matches requirements")
-    elif edu_score < 50:
-        weaknesses.append("Education may not fully match requirements")
-
-    # Keywords
-    keyword_score = ats_data.get("keyword_match_score", 0)
-    if keyword_score >= 70:
-        strengths.append(f"High keyword alignment ({keyword_score:.0f}%)")
-    elif keyword_score < 40:
-        weaknesses.append("Low keyword alignment with job description")
-
-    # Formatting
-    fmt_score = ats_data.get("formatting_score", 0)
     if fmt_score >= 80:
-        strengths.append("Resume formatting is ATS-friendly")
-    elif fmt_score < 60:
-        weaknesses.append("Resume formatting needs improvement for ATS")
+        strengths.append("Resume is well-structured and easy for ATS parsers to scan.")
+    else:
+        weaknesses.append("Resume formatting could be improved for ATS readability.")
 
-    # Missing keywords
-    missing_kws = ats_data.get("missing_keywords", [])[:4]
-    if missing_kws:
-        reasons.append(f"❌ Missing keywords: {', '.join(missing_kws)}")
+    if final_score >= 75:
+        reasons.append("Your resume is highly competitive for this role.")
+    elif final_score >= 50:
+        reasons.append("Moderate match. Adding missing skills will significantly boost your score.")
+    else:
+        reasons.append("Significant gaps identified. Consider tailoring your resume to highlight relevant keywords.")
 
     return reasons, strengths, weaknesses
