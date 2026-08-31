@@ -83,7 +83,6 @@ async def upload_resume(
 
     db.add(resume)
     await db.commit()
-    await db.refresh(resume)
 
     logger.info(f"Resume stored with ID {resume.id}")
     return resume
@@ -165,7 +164,6 @@ async def create_job_description(
 
     db.add(jd)
     await db.commit()
-    await db.refresh(jd)
 
     logger.info(f"Job description stored with ID {jd.id}")
     return jd
