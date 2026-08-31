@@ -52,21 +52,21 @@ async def run_analysis(body: AnalysisRequest, db: AsyncSession = Depends(get_db)
 
     import asyncio
 
-    # 1. ATS Analysis (Fast rule-based matching, ~0.05s)
+    # 1. ATS Analysis (Fast rule-based matching, ~0.001s)
     ats_data = analyze_ats(resume_text, jd_text, {
         "experience_years": resume.experience_years or 0,
         "education": resume.education or [],
     })
 
-    # 2 & 3. Run Match Scoring and AI Suggestions concurrently in parallel with safety timeout
+    # 2. Match Scoring (Fast TF-IDF cosine similarity, ~0.001s)
+    match_data = calculate_match_score(resume_text, jd_text, ats_data)
+
+    # 3. AI Suggestions (with 3.0s strict timeout protection)
     try:
-        match_task = asyncio.to_thread(calculate_match_score, resume_text, jd_text, ats_data)
-        suggestions_task = generate_suggestions(resume_text, jd_text, ats_data)
-        match_data, suggestions_data = await asyncio.wait_for(asyncio.gather(match_task, suggestions_task), timeout=5.0)
+        suggestions_data = await asyncio.wait_for(generate_suggestions(resume_text, jd_text, ats_data), timeout=3.0)
     except Exception as e:
-        logger.warning(f"Analysis gather warning: {e}. Using fast fallback scoring.")
+        logger.warning(f"Suggestions note: {e}. Using fast rule-based suggestions.")
         from backend.services.ai_suggestions import _rule_based_suggestions
-        match_data = calculate_match_score(resume_text, jd_text, ats_data)
         suggestions_data = _rule_based_suggestions(ats_data)
 
     # 4. Save to DB
