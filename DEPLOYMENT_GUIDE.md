@@ -12,8 +12,8 @@ Run these commands in your project root directory (`Ats Project`):
 # 1. Rename branch to main
 git branch -M main
 
-# 2. Add your GitHub remote repository (Create 'Ats-Project' on GitHub first)
-git remote add origin https://github.com/prithvirajanilkumarit-wq/Ats-Project.git
+# 2. Add your GitHub remote repository (Create 'Ats-Checker' on GitHub first)
+git remote add origin https://github.com/prithvirajanilkumarit-wq/Ats-Checker.git
 
 # 3. Push your committed code to GitHub
 git push -u origin main
@@ -25,7 +25,7 @@ git push -u origin main
 
 1. Go to **[https://dashboard.render.com](https://dashboard.render.com)** and sign in with GitHub.
 2. Click **New +** $\rightarrow$ **Web Service**.
-3. Connect your GitHub repository: `prithvirajanilkumarit-wq/Ats-Project`.
+3. Connect your GitHub repository: `prithvirajanilkumarit-wq/Ats-Checker`.
 4. Configure the Web Service settings:
    - **Name**: `ats-project-backend`
    - **Environment**: `Python 3`
@@ -43,7 +43,7 @@ git push -u origin main
 ## Part 3: Deploy Frontend to Vercel (Free)
 
 1. Go to **[https://vercel.com/new](https://vercel.com/new)** and sign in with GitHub.
-2. Select repository: `prithvirajanilkumarit-wq/Ats-Project`.
+2. Select repository: `prithvirajanilkumarit-wq/Ats-Checker`.
 3. Set **Root Directory**: `frontend`
 4. Under **Environment Variables**, add:
    - `VITE_API_URL`: `https://ats-project-backend.onrender.com/api`
