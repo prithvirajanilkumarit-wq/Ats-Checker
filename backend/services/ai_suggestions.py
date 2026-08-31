@@ -25,7 +25,7 @@ async def generate_suggestions(
         try:
             logger.info("Generating AI suggestions via Google Gemini Pro...")
             import asyncio
-            return await asyncio.wait_for(_gemini_suggestions(resume_text, jd_text, ats_data), timeout=2.5)
+            return await asyncio.wait_for(_gemini_suggestions(resume_text, jd_text, ats_data), timeout=2.0)
         except Exception as e:
             logger.warning(f"Gemini Pro note: {e}. Returning fast rule-based suggestions.")
             return _rule_based_suggestions(ats_data)
@@ -92,7 +92,8 @@ Return ONLY valid JSON. No markdown, no explanation."""
     }
 
     try:
-        async with httpx.AsyncClient(timeout=3.0) as client:
+        timeout_config = httpx.Timeout(2.0, connect=2.0, read=2.0, write=2.0)
+        async with httpx.AsyncClient(timeout=timeout_config) as client:
             response = await client.post(url, json=payload)
             if response.status_code != 200:
                 logger.warning(f"Gemini API status {response.status_code}. Using fast rule-based suggestions.")

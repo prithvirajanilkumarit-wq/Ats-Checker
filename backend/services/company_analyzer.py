@@ -138,7 +138,8 @@ Return ONLY valid JSON."""
     }
 
     try:
-        async with httpx.AsyncClient(timeout=3.0) as client:
+        timeout_config = httpx.Timeout(2.0, connect=2.0, read=2.0, write=2.0)
+        async with httpx.AsyncClient(timeout=timeout_config) as client:
             response = await client.post(url, json=payload)
             if response.status_code != 200:
                 logger.warning(f"Gemini company analysis status {response.status_code}. Using fallback.")
