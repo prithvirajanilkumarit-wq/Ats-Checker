@@ -91,20 +91,26 @@ Return ONLY valid JSON. No markdown, no explanation."""
         }
     }
 
-    async with httpx.AsyncClient(timeout=3.0) as client:
-        response = await client.post(url, json=payload)
-        response.raise_for_status()
-        res_json = response.json()
-        raw_content = res_json["candidates"][0]["content"]["parts"][0]["text"].strip()
-        if raw_content.startswith("```"):
-            parts = raw_content.split("```")
-            if len(parts) >= 2:
-                raw_content = parts[1]
-                if raw_content.startswith("json"):
-                    raw_content = raw_content[4:]
-                raw_content = raw_content.strip()
-        data = json.loads(raw_content)
-        return _validate_suggestions(data)
+    try:
+        async with httpx.AsyncClient(timeout=3.0) as client:
+            response = await client.post(url, json=payload)
+            if response.status_code != 200:
+                logger.warning(f"Gemini API status {response.status_code}. Using fast rule-based suggestions.")
+                return _rule_based_suggestions(ats_data)
+            res_json = response.json()
+            raw_content = res_json["candidates"][0]["content"]["parts"][0]["text"].strip()
+            if raw_content.startswith("```"):
+                parts = raw_content.split("```")
+                if len(parts) >= 2:
+                    raw_content = parts[1]
+                    if raw_content.startswith("json"):
+                        raw_content = raw_content[4:]
+                    raw_content = raw_content.strip()
+            data = json.loads(raw_content)
+            return _validate_suggestions(data)
+    except Exception as e:
+        logger.warning(f"Gemini API error: {e}. Using fast rule-based suggestions.")
+        return _rule_based_suggestions(ats_data)
 
 
 @retry(stop=stop_after_attempt(3), wait=wait_exponential(multiplier=1, min=2, max=10))

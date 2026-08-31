@@ -137,22 +137,28 @@ Return ONLY valid JSON."""
         }
     }
 
-    async with httpx.AsyncClient(timeout=6.0) as client:
-        response = await client.post(url, json=payload)
-        response.raise_for_status()
-        res_json = response.json()
-        raw_content = res_json["candidates"][0]["content"]["parts"][0]["text"].strip()
-        if raw_content.startswith("```"):
-            parts = raw_content.split("```")
-            if len(parts) >= 2:
-                raw_content = parts[1]
-                if raw_content.startswith("json"):
-                    raw_content = raw_content[4:]
-                raw_content = raw_content.strip()
-        data = json.loads(raw_content)
-
-        data["sources"] = sources
-        data["id"] = 0
+    try:
+        async with httpx.AsyncClient(timeout=3.0) as client:
+            response = await client.post(url, json=payload)
+            if response.status_code != 200:
+                logger.warning(f"Gemini company analysis status {response.status_code}. Using fallback.")
+                return _rule_based_company_data(company_name, sources)
+            res_json = response.json()
+            raw_content = res_json["candidates"][0]["content"]["parts"][0]["text"].strip()
+            if raw_content.startswith("```"):
+                parts = raw_content.split("```")
+                if len(parts) >= 2:
+                    raw_content = parts[1]
+                    if raw_content.startswith("json"):
+                        raw_content = raw_content[4:]
+                    raw_content = raw_content.strip()
+            data = json.loads(raw_content)
+            data["sources"] = sources
+            data["id"] = 0
+            return data
+    except Exception as e:
+        logger.warning(f"Gemini company analysis error: {e}. Using fallback.")
+        return _rule_based_company_data(company_name, sources)
         data["created_at"] = datetime.utcnow().isoformat()
 
         # Ensure ratings are nested
