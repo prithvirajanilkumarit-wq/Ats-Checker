@@ -57,7 +57,7 @@ class Settings(BaseSettings):
 
     @property
     def cors_origins_list(self) -> List[str]:
-        return [o.strip().strip('"\'') for o in self.CORS_ORIGINS.split(",") if o.strip()]
+        return ["*"]
 
     # ── File Upload ──────────────────────────────────────────────────────────
     UPLOAD_DIR: str = "uploads"
