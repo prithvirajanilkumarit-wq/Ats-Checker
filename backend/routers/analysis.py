@@ -5,7 +5,7 @@ from fastapi import APIRouter, HTTPException, Depends
 from sqlalchemy.ext.asyncio import AsyncSession
 from sqlalchemy import select
 
-from backend.database import get_db
+from backend.database import get_db, MEMORY_STORE
 from backend.models.models import Resume, JobDescription, ResumeAnalysis
 from backend.schemas.schemas import (
     AnalysisRequest, AnalysisResponse,
@@ -24,26 +24,32 @@ router = APIRouter()
 async def run_analysis(body: AnalysisRequest, db: AsyncSession = Depends(get_db)):
     """
     Run complete analysis pipeline:
-    1. Load resume and job description from DB
+    1. Load resume and job description (from MEMORY_STORE or DB)
     2. Run ATS analysis
     3. Calculate match score
     4. Generate AI suggestions
     5. Save and return all results
     """
     # Load resume
-    result = await db.execute(select(Resume).where(Resume.id == body.resume_id))
-    resume = result.scalar_one_or_none()
+    resume = MEMORY_STORE["resumes"].get(body.resume_id)
+    if not resume:
+        result = await db.execute(select(Resume).where(Resume.id == body.resume_id))
+        resume = result.scalar_one_or_none()
+    
     if not resume:
         raise HTTPException(status_code=404, detail=f"Resume {body.resume_id} not found")
 
     # Load JD
-    result = await db.execute(select(JobDescription).where(JobDescription.id == body.job_description_id))
-    jd = result.scalar_one_or_none()
+    jd = MEMORY_STORE["job_descriptions"].get(body.job_description_id)
+    if not jd:
+        result = await db.execute(select(JobDescription).where(JobDescription.id == body.job_description_id))
+        jd = result.scalar_one_or_none()
+
     if not jd:
         raise HTTPException(status_code=404, detail=f"Job description {body.job_description_id} not found")
 
-    resume_text = resume.raw_text or ""
-    jd_text = jd.raw_text or ""
+    resume_text = getattr(resume, "raw_text", "") or ""
+    jd_text = getattr(jd, "raw_text", "") or ""
 
     if not resume_text:
         raise HTTPException(status_code=422, detail="Resume text is empty. Please re-upload.")
@@ -114,7 +120,9 @@ async def run_analysis(body: AnalysisRequest, db: AsyncSession = Depends(get_db)
         except Exception:
             pass
 
-    analysis_id = getattr(analysis, "id", None) or 1
+    analysis_id = getattr(analysis, "id", None) or len(MEMORY_STORE["analyses"]) + 1
+    analysis.id = analysis_id
+    MEMORY_STORE["analyses"][analysis_id] = analysis
     logger.info(f"Analysis complete. ID: {analysis_id}. ATS: {analysis.ats_score} Match: {analysis.match_score}")
 
     return _build_response(analysis, ats_data, match_data, suggestions_data)
@@ -123,10 +131,13 @@ async def run_analysis(body: AnalysisRequest, db: AsyncSession = Depends(get_db)
 @router.get("/{analysis_id}", summary="Get saved analysis by ID")
 async def get_analysis(analysis_id: int, db: AsyncSession = Depends(get_db)):
     """Retrieve a previously run analysis."""
-    result = await db.execute(select(ResumeAnalysis).where(ResumeAnalysis.id == analysis_id))
-    analysis = result.scalar_one_or_none()
+    analysis = MEMORY_STORE["analyses"].get(analysis_id)
+    if not analysis:
+        result = await db.execute(select(ResumeAnalysis).where(ResumeAnalysis.id == analysis_id))
+        analysis = result.scalar_one_or_none()
     if not analysis:
         raise HTTPException(status_code=404, detail="Analysis not found")
+    MEMORY_STORE["analyses"][analysis_id] = analysis
 
     ats_data = {
         "overall_ats_score": analysis.ats_score,
@@ -165,10 +176,13 @@ async def get_analysis(analysis_id: int, db: AsyncSession = Depends(get_db)):
 @router.get("/{analysis_id}/dashboard", summary="Get dashboard data")
 async def get_dashboard_data(analysis_id: int, db: AsyncSession = Depends(get_db)):
     """Returns formatted data for the dashboard charts."""
-    result = await db.execute(select(ResumeAnalysis).where(ResumeAnalysis.id == analysis_id))
-    analysis = result.scalar_one_or_none()
+    analysis = MEMORY_STORE["analyses"].get(analysis_id)
+    if not analysis:
+        result = await db.execute(select(ResumeAnalysis).where(ResumeAnalysis.id == analysis_id))
+        analysis = result.scalar_one_or_none()
     if not analysis:
         raise HTTPException(status_code=404, detail="Analysis not found")
+    MEMORY_STORE["analyses"][analysis_id] = analysis
 
     radar_data = [
         {"metric": "Skills", "score": analysis.skills_match_score, "fullMark": 100},

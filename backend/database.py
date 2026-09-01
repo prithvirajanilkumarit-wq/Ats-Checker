@@ -8,19 +8,22 @@ from backend.utils.logger import get_logger
 
 logger = get_logger(__name__)
 
-from sqlalchemy.pool import NullPool
+from sqlalchemy.pool import StaticPool
 
 engine = create_async_engine(
     settings.DATABASE_URL,
     echo=settings.DEBUG,
-    poolclass=NullPool if "sqlite" in settings.DATABASE_URL else None,
-    connect_args={"check_same_thread": False, "timeout": 15} if "sqlite" in settings.DATABASE_URL else {},
+    poolclass=StaticPool if "sqlite" in settings.DATABASE_URL else None,
+    connect_args={"check_same_thread": False, "timeout": 5} if "sqlite" in settings.DATABASE_URL else {},
 )
 
-if "sqlite" in settings.DATABASE_URL:
-    # Removed PRAGMA journal_mode=WAL and synchronous=OFF because they cause I/O errors 
-    # on Render's ephemeral/networked filesystem, leading to hard crashes (502 Bad Gateway).
-    pass
+# Global in-memory cache for zero-latency lookups and fail-safe persistence
+MEMORY_STORE = {
+    "resumes": {},
+    "job_descriptions": {},
+    "analyses": {},
+    "companies": {},
+}
 
 
 AsyncSessionLocal = async_sessionmaker(

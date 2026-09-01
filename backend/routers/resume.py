@@ -7,7 +7,7 @@ from fastapi import APIRouter, UploadFile, File, HTTPException, Depends
 from sqlalchemy.ext.asyncio import AsyncSession
 from sqlalchemy import select
 
-from backend.database import get_db
+from backend.database import get_db, MEMORY_STORE
 from backend.models.models import Resume, JobDescription
 from backend.schemas.schemas import ResumeUploadResponse, JobDescriptionCreate, JobDescriptionResponse
 from backend.services.resume_parser import parse_resume
@@ -95,7 +95,9 @@ async def upload_resume(
         except Exception:
             pass
 
-    resume_id = getattr(resume, "id", None) or 1
+    resume_id = getattr(resume, "id", None) or len(MEMORY_STORE["resumes"]) + 1
+    resume.id = resume_id
+    MEMORY_STORE["resumes"][resume_id] = resume
     logger.info(f"Resume uploaded and parsed with ID {resume_id}")
     return resume
 
@@ -103,10 +105,13 @@ async def upload_resume(
 @router.get("/{resume_id}", response_model=ResumeUploadResponse, summary="Get resume by ID")
 async def get_resume(resume_id: int, db: AsyncSession = Depends(get_db)):
     """Retrieve a previously uploaded resume."""
+    if resume_id in MEMORY_STORE["resumes"]:
+        return MEMORY_STORE["resumes"][resume_id]
     result = await db.execute(select(Resume).where(Resume.id == resume_id))
     resume = result.scalar_one_or_none()
     if not resume:
         raise HTTPException(status_code=404, detail="Resume not found")
+    MEMORY_STORE["resumes"][resume_id] = resume
     return resume
 
 
@@ -188,15 +193,20 @@ async def create_job_description(
         except Exception:
             pass
 
-    jd_id = getattr(jd, "id", None) or 1
+    jd_id = getattr(jd, "id", None) or len(MEMORY_STORE["job_descriptions"]) + 1
+    jd.id = jd_id
+    MEMORY_STORE["job_descriptions"][jd_id] = jd
     logger.info(f"Job description stored with ID {jd_id}")
     return jd
 
 
 @router.get("/job-description/{jd_id}", response_model=JobDescriptionResponse)
 async def get_job_description(jd_id: int, db: AsyncSession = Depends(get_db)):
+    if jd_id in MEMORY_STORE["job_descriptions"]:
+        return MEMORY_STORE["job_descriptions"][jd_id]
     result = await db.execute(select(JobDescription).where(JobDescription.id == jd_id))
     jd = result.scalar_one_or_none()
     if not jd:
         raise HTTPException(status_code=404, detail="Job description not found")
+    MEMORY_STORE["job_descriptions"][jd_id] = jd
     return jd
