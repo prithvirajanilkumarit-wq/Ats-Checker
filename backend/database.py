@@ -8,11 +8,23 @@ from backend.utils.logger import get_logger
 
 logger = get_logger(__name__)
 
+from sqlalchemy import event
+
 engine = create_async_engine(
     settings.DATABASE_URL,
     echo=settings.DEBUG,
     connect_args={"check_same_thread": False, "timeout": 20} if "sqlite" in settings.DATABASE_URL else {},
 )
+
+if "sqlite" in settings.DATABASE_URL:
+    @event.listens_for(engine.sync_engine, "connect")
+    def set_sqlite_pragma(dbapi_connection, connection_record):
+        cursor = dbapi_connection.cursor()
+        cursor.execute("PRAGMA journal_mode=WAL")
+        cursor.execute("PRAGMA synchronous=OFF")
+        cursor.execute("PRAGMA cache_size=-64000")
+        cursor.close()
+
 
 AsyncSessionLocal = async_sessionmaker(
     engine,
