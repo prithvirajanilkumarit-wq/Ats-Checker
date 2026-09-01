@@ -8,13 +8,10 @@ from backend.utils.logger import get_logger
 
 logger = get_logger(__name__)
 
-from sqlalchemy.pool import StaticPool
-
 engine = create_async_engine(
     settings.DATABASE_URL,
     echo=settings.DEBUG,
-    poolclass=StaticPool if "sqlite" in settings.DATABASE_URL else None,
-    connect_args={"check_same_thread": False, "timeout": 5} if "sqlite" in settings.DATABASE_URL else {},
+    connect_args={"check_same_thread": False} if "sqlite" in settings.DATABASE_URL else {},
 )
 
 # Global in-memory cache for zero-latency lookups and fail-safe persistence
