@@ -77,21 +77,22 @@ export function ProgressBar({ value, label, showLabel = true, height = 8 }) {
 }
 
 // ── Match Category Badge ───────────────────────────────────────
-export function MatchBadge({ category }) {
+export function MatchBadge({ category = '' }) {
+  const cleanCat = (category || '').replace(/\s*Match$/i, '').trim()
   const styles = {
     'Very High': { bg: '#D1FAE5', color: '#065F46', border: '#A7F3D0' },
     'High': { bg: '#DBEAFE', color: '#1E40AF', border: '#BFDBFE' },
     'Medium': { bg: '#FEF3C7', color: '#92400E', border: '#FDE68A' },
     'Low': { bg: '#FEE2E2', color: '#991B1B', border: '#FECACA' },
   }
-  const s = styles[category] || styles['Low']
+  const s = styles[cleanCat] || styles['Low']
   return (
     <span style={{
       padding: '0.375rem 1rem', borderRadius: '999px',
       background: s.bg, color: s.color, fontWeight: 700, fontSize: '0.875rem',
       border: `1.5px solid ${s.border}`,
     }}>
-      {category} Match
+      {cleanCat} Match
     </span>
   )
 }

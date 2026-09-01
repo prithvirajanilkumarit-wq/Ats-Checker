@@ -90,7 +90,7 @@ class Settings(BaseSettings):
     @property
     def has_gemini(self) -> bool:
         key = self.GEMINI_API_KEY.strip()
-        return bool(key) and key.startswith("AIzaSy")
+        return bool(key) and not key.startswith("your_")
 
     @property
     def has_openai(self) -> bool:

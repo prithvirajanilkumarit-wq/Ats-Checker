@@ -138,7 +138,7 @@ Return ONLY valid JSON."""
     }
 
     try:
-        timeout_config = httpx.Timeout(2.0, connect=2.0, read=2.0, write=2.0)
+        timeout_config = httpx.Timeout(5.0, connect=5.0, read=5.0, write=5.0)
         async with httpx.AsyncClient(timeout=timeout_config) as client:
             response = await client.post(url, json=payload)
             if response.status_code != 200:
@@ -156,23 +156,22 @@ Return ONLY valid JSON."""
             data = json.loads(raw_content)
             data["sources"] = sources
             data["id"] = 0
+            data["created_at"] = datetime.utcnow().isoformat()
+
+            # Ensure ratings are nested
+            data["ratings"] = {
+                "overall_rating": float(data.pop("overall_rating", 7.0)),
+                "work_life_balance": float(data.pop("work_life_balance", 7.0)),
+                "salary_satisfaction": float(data.pop("salary_satisfaction", 7.0)),
+                "career_growth": float(data.pop("career_growth", 7.0)),
+                "culture_rating": float(data.pop("culture_rating", 7.0)),
+                "interview_difficulty": float(data.pop("interview_difficulty", 6.0)),
+            }
+
             return data
     except Exception as e:
         logger.warning(f"Gemini company analysis error: {e}. Using fallback.")
         return _rule_based_company_data(company_name, sources)
-        data["created_at"] = datetime.utcnow().isoformat()
-
-        # Ensure ratings are nested
-        data["ratings"] = {
-            "overall_rating": float(data.pop("overall_rating", 7.0)),
-            "work_life_balance": float(data.pop("work_life_balance", 7.0)),
-            "salary_satisfaction": float(data.pop("salary_satisfaction", 7.0)),
-            "career_growth": float(data.pop("career_growth", 7.0)),
-            "culture_rating": float(data.pop("culture_rating", 7.0)),
-            "interview_difficulty": float(data.pop("interview_difficulty", 6.0)),
-        }
-
-        return data
 
 
 async def _openai_company_analysis(

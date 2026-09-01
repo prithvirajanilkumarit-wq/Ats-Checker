@@ -433,6 +433,7 @@ export default function ResumeAnalyzerPage() {
       setAnalysis(res.data)
     } catch (e) {
       const msg = e.message || 'Analysis failed. Please try again.'
+      toast.error(msg)
       if (msg.includes('not found') || msg.includes('404')) {
         setError('Resume session expired on server restart. Please re-upload your resume.')
         setStep(0)
@@ -487,20 +488,23 @@ export default function ResumeAnalyzerPage() {
 
         {/* Step 1: JD Input */}
         {step === 1 && (
-          <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: '1.5rem' }}>
-            <div className="card" style={{ padding: '2rem' }}>
-              <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: '1rem' }}>
-                <h2 style={{ fontSize: '1.125rem', fontWeight: 800 }}>✅ Resume Uploaded</h2>
-                <button onClick={() => { setStep(0); setResume(null) }} style={{ background: 'none', border: 'none', cursor: 'pointer', color: '#EF4444', fontWeight: 600, fontSize: '0.875rem' }}>
-                  Re-upload
-                </button>
+          <div>
+            {error && <ErrorAlert message={error} onDismiss={() => setError('')} style={{ marginBottom: '1.5rem' }} />}
+            <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: '1.5rem' }}>
+              <div className="card" style={{ padding: '2rem' }}>
+                <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: '1rem' }}>
+                  <h2 style={{ fontSize: '1.125rem', fontWeight: 800 }}>✅ Resume Uploaded</h2>
+                  <button onClick={() => { setStep(0); setResume(null) }} style={{ background: 'none', border: 'none', cursor: 'pointer', color: '#EF4444', fontWeight: 600, fontSize: '0.875rem' }}>
+                    Re-upload
+                  </button>
+                </div>
+                <ResumePreview resume={resume} />
               </div>
-              <ResumePreview resume={resume} />
-            </div>
-            <div className="card" style={{ padding: '2rem' }}>
-              <h2 style={{ fontSize: '1.125rem', fontWeight: 800, marginBottom: '0.5rem' }}>📋 Step 2: Job Description</h2>
-              <p style={{ color: '#6B7280', fontSize: '0.9rem', marginBottom: '1.25rem' }}>Paste the JD text or provide a job URL.</p>
-              <JDInputPanel onSubmitted={handleJDSubmitted} />
+              <div className="card" style={{ padding: '2rem' }}>
+                <h2 style={{ fontSize: '1.125rem', fontWeight: 800, marginBottom: '0.5rem' }}>📋 Step 2: Job Description</h2>
+                <p style={{ color: '#6B7280', fontSize: '0.9rem', marginBottom: '1.25rem' }}>Paste the JD text or provide a job URL.</p>
+                <JDInputPanel onSubmitted={handleJDSubmitted} />
+              </div>
             </div>
           </div>
         )}

@@ -102,11 +102,16 @@ async def run_analysis(body: AnalysisRequest, db: AsyncSession = Depends(get_db)
 
     try:
         db.add(analysis)
-        await asyncio.wait_for(db.commit(), timeout=2.0)
+        await db.commit()
+        await db.refresh(analysis)
     except Exception as e:
         logger.warning(f"DB commit note: {e}")
         if not hasattr(analysis, "id") or analysis.id is None:
             analysis.id = 1
+
+    if getattr(analysis, "created_at", None) is None:
+        from datetime import datetime
+        analysis.created_at = datetime.utcnow()
 
     logger.info(f"Analysis complete. ID: {getattr(analysis, 'id', 1)}. ATS: {analysis.ats_score} Match: {analysis.match_score}")
 
