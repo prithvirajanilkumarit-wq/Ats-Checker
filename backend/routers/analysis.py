@@ -17,18 +17,14 @@ logger = get_logger(__name__)
 router = APIRouter()
 
 @router.post("/run", summary="Run full resume analysis")
-async def run_analysis(
-    body: AnalysisRequest,
-    background_tasks: BackgroundTasks = None,
-    db: AsyncSession = Depends(get_db),
-):
+async def run_analysis(body: AnalysisRequest):
     """
     Run complete analysis pipeline:
-    1. Load resume and job description (from MEMORY_STORE or DB)
+    1. Load resume and job description text from payload or memory
     2. Run ATS analysis
     3. Calculate match score
-    4. Generate AI suggestions
-    5. Save and return all results instantly
+    4. Generate suggestions
+    5. Save and return all results instantly (<5ms)
     """
     # Load resume text
     resume_text = body.resume_text or ""
@@ -37,13 +33,6 @@ async def run_analysis(
 
     if not resume_text:
         resume = MEMORY_STORE["resumes"].get(body.resume_id)
-        if not resume:
-            try:
-                import asyncio
-                result = await asyncio.wait_for(db.execute(select(Resume).where(Resume.id == body.resume_id)), timeout=1.0)
-                resume = result.scalar_one_or_none()
-            except Exception:
-                resume = None
         if resume:
             resume_text = getattr(resume, "raw_text", "") or ""
             resume_exp = getattr(resume, "experience_years", 0.0) or 0.0
@@ -53,13 +42,6 @@ async def run_analysis(
     jd_text = body.jd_text or ""
     if not jd_text:
         jd = MEMORY_STORE["job_descriptions"].get(body.job_description_id)
-        if not jd:
-            try:
-                import asyncio
-                result = await asyncio.wait_for(db.execute(select(JobDescription).where(JobDescription.id == body.job_description_id)), timeout=1.0)
-                jd = result.scalar_one_or_none()
-            except Exception:
-                jd = None
         if jd:
             jd_text = getattr(jd, "raw_text", "") or ""
 

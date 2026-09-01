@@ -21,9 +21,14 @@ async def test():
 
         print(f"Created Resume id={r.id}, JD id={jd.id}")
         
-        req = AnalysisRequest(resume_id=r.id, job_description_id=jd.id)
+        req = AnalysisRequest(
+            resume_id=r.id,
+            job_description_id=jd.id,
+            resume_text=r.raw_text,
+            jd_text=jd.raw_text,
+        )
         try:
-            res = await run_analysis(req, None, db)
+            res = await run_analysis(req)
             print("Run analysis result:", res)
         except Exception as e:
             import traceback
