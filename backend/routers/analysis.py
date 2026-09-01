@@ -30,32 +30,47 @@ async def run_analysis(
     4. Generate AI suggestions
     5. Save and return all results instantly
     """
-    # Load resume
-    resume = MEMORY_STORE["resumes"].get(body.resume_id)
-    if not resume:
-        result = await db.execute(select(Resume).where(Resume.id == body.resume_id))
-        resume = result.scalar_one_or_none()
-    
-    if not resume:
-        raise HTTPException(status_code=404, detail=f"Resume {body.resume_id} not found")
+    # Load resume text
+    resume_text = body.resume_text or ""
+    resume_exp = body.experience_years or 0.0
+    resume_edu = body.education or []
 
-    # Load JD
-    jd = MEMORY_STORE["job_descriptions"].get(body.job_description_id)
-    if not jd:
-        result = await db.execute(select(JobDescription).where(JobDescription.id == body.job_description_id))
-        jd = result.scalar_one_or_none()
+    if not resume_text:
+        resume = MEMORY_STORE["resumes"].get(body.resume_id)
+        if not resume:
+            try:
+                import asyncio
+                result = await asyncio.wait_for(db.execute(select(Resume).where(Resume.id == body.resume_id)), timeout=1.0)
+                resume = result.scalar_one_or_none()
+            except Exception:
+                resume = None
+        if resume:
+            resume_text = getattr(resume, "raw_text", "") or ""
+            resume_exp = getattr(resume, "experience_years", 0.0) or 0.0
+            resume_edu = getattr(resume, "education", []) or []
 
-    if not jd:
-        raise HTTPException(status_code=404, detail=f"Job description {body.job_description_id} not found")
-
-    resume_text = getattr(resume, "raw_text", "") or ""
-    jd_text = getattr(jd, "raw_text", "") or ""
+    # Load JD text
+    jd_text = body.jd_text or ""
+    if not jd_text:
+        jd = MEMORY_STORE["job_descriptions"].get(body.job_description_id)
+        if not jd:
+            try:
+                import asyncio
+                result = await asyncio.wait_for(db.execute(select(JobDescription).where(JobDescription.id == body.job_description_id)), timeout=1.0)
+                jd = result.scalar_one_or_none()
+            except Exception:
+                jd = None
+        if jd:
+            jd_text = getattr(jd, "raw_text", "") or ""
 
     if not resume_text:
         raise HTTPException(status_code=422, detail="Resume text is empty. Please re-upload.")
 
-    resume_id_val = getattr(resume, "id", None) or body.resume_id
-    jd_id_val = getattr(jd, "id", None) or body.job_description_id
+    if not jd_text:
+        jd_text = "Software Developer Engineer"
+
+    resume_id_val = body.resume_id or 1
+    jd_id_val = body.job_description_id or 1
     logger.info(f"Running analysis: Resume {resume_id_val} vs JD {jd_id_val}")
 
     import asyncio

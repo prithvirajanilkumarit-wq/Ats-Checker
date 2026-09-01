@@ -421,15 +421,22 @@ export default function ResumeAnalyzerPage() {
   }
 
   const handleJDSubmitted = (data) => {
-    handleRunAnalysis(resume.id, data.id)
+    handleRunAnalysis(
+      resume.id,
+      data.id,
+      resume.raw_text,
+      data.raw_text,
+      resume.experience_years,
+      resume.education
+    )
   }
 
-  const handleRunAnalysis = async (resumeId, jdId) => {
+  const handleRunAnalysis = async (resumeId, jdId, resumeText, jdText, expYears, education) => {
     setRunning(true)
     setError('')
     setStep(2)
     try {
-      const res = await runAnalysis(resumeId, jdId)
+      const res = await runAnalysis(resumeId, jdId, resumeText, jdText, expYears, education)
       setAnalysis(res.data)
     } catch (e) {
       const msg = e.message || 'Analysis failed. Please try again.'

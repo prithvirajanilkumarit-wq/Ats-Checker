@@ -68,8 +68,12 @@ class JobDescriptionResponse(BaseModel):
 # ── Analysis Schemas ──────────────────────────────────────────────────────────
 
 class AnalysisRequest(BaseModel):
-    resume_id: int
-    job_description_id: int
+    resume_id: Optional[int] = 1
+    job_description_id: Optional[int] = 1
+    resume_text: Optional[str] = None
+    jd_text: Optional[str] = None
+    experience_years: Optional[float] = 0.0
+    education: Optional[List[Dict[str, Any]]] = None
 
 
 class SourceCitation(BaseModel):

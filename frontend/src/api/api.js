@@ -41,8 +41,15 @@ export const createJobDescription = (data) => API.post('/resume/job-description'
 export const getJobDescription = (id) => API.get(`/resume/job-description/${id}`)
 
 // ── Analysis APIs ──────────────────────────────────────────────
-export const runAnalysis = (resumeId, jdId) =>
-  API.post('/analysis/run', { resume_id: resumeId, job_description_id: jdId })
+export const runAnalysis = (resumeId, jdId, resumeText, jdText, expYears, education) =>
+  API.post('/analysis/run', {
+    resume_id: resumeId,
+    job_description_id: jdId,
+    resume_text: resumeText,
+    jd_text: jdText,
+    experience_years: expYears,
+    education: education,
+  })
 
 export const getAnalysis = (id) => API.get(`/analysis/${id}`)
 export const getDashboardData = (analysisId) => API.get(`/analysis/${analysisId}/dashboard`)
