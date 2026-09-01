@@ -103,7 +103,6 @@ async def run_analysis(body: AnalysisRequest, db: AsyncSession = Depends(get_db)
     try:
         db.add(analysis)
         await db.commit()
-        await db.refresh(analysis)
     except Exception as e:
         logger.warning(f"DB commit note: {e}")
         if not hasattr(analysis, "id") or analysis.id is None:
