@@ -23,7 +23,7 @@ class Settings(BaseSettings):
     SECRET_KEY: str = "change-me-in-production-use-a-long-random-string"
 
     # ── Database ─────────────────────────────────────────────────────────────
-    DATABASE_URL: str = "sqlite+aiosqlite:///./ats_analyzer.db"
+    DATABASE_URL: str = "sqlite+aiosqlite:///./ats_analyzer_v2.db"
     # For PostgreSQL: postgresql+asyncpg://user:password@localhost:5432/ats_db
 
     # ── Gemini ───────────────────────────────────────────────────────────────
