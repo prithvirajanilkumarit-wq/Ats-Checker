@@ -8,12 +8,13 @@ from backend.utils.logger import get_logger
 
 logger = get_logger(__name__)
 
-from sqlalchemy import event
+from sqlalchemy.pool import NullPool
 
 engine = create_async_engine(
     settings.DATABASE_URL,
     echo=settings.DEBUG,
-    connect_args={"check_same_thread": False, "timeout": 20} if "sqlite" in settings.DATABASE_URL else {},
+    poolclass=NullPool if "sqlite" in settings.DATABASE_URL else None,
+    connect_args={"check_same_thread": False, "timeout": 15} if "sqlite" in settings.DATABASE_URL else {},
 )
 
 if "sqlite" in settings.DATABASE_URL:

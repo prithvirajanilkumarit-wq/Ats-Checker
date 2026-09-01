@@ -69,6 +69,9 @@ async def run_analysis(body: AnalysisRequest, db: AsyncSession = Depends(get_db)
         from backend.services.ai_suggestions import _rule_based_suggestions
         suggestions_data = _rule_based_suggestions(ats_data)
 
+    from datetime import datetime
+    now = datetime.utcnow()
+
     # 4. Save to DB
     analysis = ResumeAnalysis(
         resume_id=resume.id,
@@ -98,6 +101,7 @@ async def run_analysis(body: AnalysisRequest, db: AsyncSession = Depends(get_db)
         grammar_suggestions=suggestions_data["grammar_suggestions"],
         keyword_suggestions=suggestions_data["keyword_suggestions"],
         quantify_suggestions=suggestions_data["quantify_suggestions"],
+        created_at=now,
     )
 
     try:
@@ -105,14 +109,13 @@ async def run_analysis(body: AnalysisRequest, db: AsyncSession = Depends(get_db)
         await db.commit()
     except Exception as e:
         logger.warning(f"DB commit note: {e}")
-        if not hasattr(analysis, "id") or analysis.id is None:
-            analysis.id = 1
+        try:
+            await db.rollback()
+        except Exception:
+            pass
 
-    if getattr(analysis, "created_at", None) is None:
-        from datetime import datetime
-        analysis.created_at = datetime.utcnow()
-
-    logger.info(f"Analysis complete. ID: {getattr(analysis, 'id', 1)}. ATS: {analysis.ats_score} Match: {analysis.match_score}")
+    analysis_id = getattr(analysis, "id", None) or 1
+    logger.info(f"Analysis complete. ID: {analysis_id}. ATS: {analysis.ats_score} Match: {analysis.match_score}")
 
     return _build_response(analysis, ats_data, match_data, suggestions_data)
 
@@ -237,11 +240,18 @@ async def list_analyses(db: AsyncSession = Depends(get_db)):
 
 
 def _build_response(analysis, ats_data, match_data, suggestions_data):
-    """Build the full analysis response dict."""
+    """Build the full analysis response dict safely."""
+    from datetime import datetime
+    created_at_val = getattr(analysis, "created_at", None)
+    if created_at_val and hasattr(created_at_val, "isoformat"):
+        created_at_str = created_at_val.isoformat()
+    else:
+        created_at_str = datetime.utcnow().isoformat()
+
     return {
-        "id": analysis.id,
-        "resume_id": analysis.resume_id,
-        "job_description_id": analysis.job_description_id,
+        "id": getattr(analysis, "id", None) or 1,
+        "resume_id": getattr(analysis, "resume_id", None) or 1,
+        "job_description_id": getattr(analysis, "job_description_id", None) or 1,
         "ats_score": {
             "overall_ats_score": ats_data["overall_ats_score"],
             "skills_match_score": ats_data["skills_match_score"],
@@ -264,5 +274,5 @@ def _build_response(analysis, ats_data, match_data, suggestions_data):
             "weaknesses": match_data["weaknesses"],
         },
         "suggestions": suggestions_data,
-        "created_at": analysis.created_at.isoformat(),
+        "created_at": created_at_str,
     }

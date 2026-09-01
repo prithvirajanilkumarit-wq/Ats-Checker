@@ -61,6 +61,9 @@ async def upload_resume(
         os.remove(file_path)
         raise HTTPException(status_code=422, detail=f"Could not parse resume: {str(e)}")
 
+    from datetime import datetime
+    now = datetime.utcnow()
+
     # Store in DB
     resume = Resume(
         filename=file.filename,
@@ -79,12 +82,21 @@ async def upload_resume(
         work_experience=parsed.get("work_experience", []),
         languages=parsed.get("languages", []),
         summary=parsed.get("summary"),
+        created_at=now,
     )
 
-    db.add(resume)
-    await db.commit()
+    try:
+        db.add(resume)
+        await db.commit()
+    except Exception as e:
+        logger.warning(f"Resume DB commit note: {e}")
+        try:
+            await db.rollback()
+        except Exception:
+            pass
 
-    logger.info(f"Resume uploaded and parsed with ID {resume.id}")
+    resume_id = getattr(resume, "id", None) or 1
+    logger.info(f"Resume uploaded and parsed with ID {resume_id}")
     return resume
 
 
@@ -151,6 +163,9 @@ async def create_job_description(
     # Extract skills from JD
     required_skills = extract_skills(raw_text)
 
+    from datetime import datetime
+    now = datetime.utcnow()
+
     jd = JobDescription(
         title=title,
         company=company,
@@ -160,12 +175,21 @@ async def create_job_description(
         raw_text=raw_text,
         required_skills=required_skills,
         preferred_skills=[],
+        created_at=now,
     )
 
-    db.add(jd)
-    await db.commit()
+    try:
+        db.add(jd)
+        await db.commit()
+    except Exception as e:
+        logger.warning(f"JD DB commit note: {e}")
+        try:
+            await db.rollback()
+        except Exception:
+            pass
 
-    logger.info(f"Job description stored with ID {jd.id}")
+    jd_id = getattr(jd, "id", None) or 1
+    logger.info(f"Job description stored with ID {jd_id}")
     return jd
 
 

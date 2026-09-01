@@ -16,29 +16,27 @@ async def generate_suggestions(
 ) -> Dict[str, Any]:
     """
     Generate AI-powered resume improvement suggestions.
-    Prioritizes Gemini Pro (with 4.5s timeout protection), then falls back to rule-based suggestions.
+    Prioritizes Gemini Pro (with 1.5s strict timeout), then falls back to rule-based suggestions.
     """
     if not settings.ENABLE_AI_SUGGESTIONS:
         return _rule_based_suggestions(ats_data)
 
     if settings.has_gemini:
         try:
-            logger.info("Generating AI suggestions via Google Gemini Pro...")
             import asyncio
-            return await asyncio.wait_for(_gemini_suggestions(resume_text, jd_text, ats_data), timeout=2.0)
+            return await asyncio.wait_for(_gemini_suggestions(resume_text, jd_text, ats_data), timeout=1.5)
         except Exception as e:
-            logger.warning(f"Gemini Pro note: {e}. Returning fast rule-based suggestions.")
+            logger.info(f"Gemini note: {e}. Returning fast rule-based suggestions.")
             return _rule_based_suggestions(ats_data)
 
     if settings.has_openai:
         try:
-            logger.info("Generating AI suggestions via OpenAI GPT-4...")
             import asyncio
-            return await asyncio.wait_for(_openai_suggestions(resume_text, jd_text, ats_data), timeout=4.5)
+            return await asyncio.wait_for(_openai_suggestions(resume_text, jd_text, ats_data), timeout=1.5)
         except Exception as e:
-            logger.warning(f"OpenAI suggestions note: {e}. Using fast rule-based suggestions.")
+            logger.info(f"OpenAI note: {e}. Returning fast rule-based suggestions.")
+            return _rule_based_suggestions(ats_data)
 
-    logger.info("Using rule-based suggestions engine.")
     return _rule_based_suggestions(ats_data)
 
 
