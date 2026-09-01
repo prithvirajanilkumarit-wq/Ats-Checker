@@ -17,13 +17,9 @@ engine = create_async_engine(
 )
 
 if "sqlite" in settings.DATABASE_URL:
-    @event.listens_for(engine.sync_engine, "connect")
-    def set_sqlite_pragma(dbapi_connection, connection_record):
-        cursor = dbapi_connection.cursor()
-        cursor.execute("PRAGMA journal_mode=WAL")
-        cursor.execute("PRAGMA synchronous=OFF")
-        cursor.execute("PRAGMA cache_size=-64000")
-        cursor.close()
+    # Removed PRAGMA journal_mode=WAL and synchronous=OFF because they cause I/O errors 
+    # on Render's ephemeral/networked filesystem, leading to hard crashes (502 Bad Gateway).
+    pass
 
 
 AsyncSessionLocal = async_sessionmaker(
