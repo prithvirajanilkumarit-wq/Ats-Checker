@@ -77,8 +77,8 @@ async def run_analysis(
 
     # 1. ATS Analysis (Fast rule-based matching, ~0.001s)
     ats_data = analyze_ats(resume_text, jd_text, {
-        "experience_years": getattr(resume, "experience_years", 0) or 0,
-        "education": getattr(resume, "education", []) or [],
+        "experience_years": resume_exp,
+        "education": resume_edu,
     })
 
     # 2. Match Scoring (Fast TF-IDF cosine similarity, ~0.001s)

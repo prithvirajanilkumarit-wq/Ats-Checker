@@ -15,28 +15,8 @@ async def generate_suggestions(
     ats_data: Dict[str, Any],
 ) -> Dict[str, Any]:
     """
-    Generate AI-powered resume improvement suggestions.
-    Prioritizes Gemini Pro (with 1.5s strict timeout), then falls back to rule-based suggestions.
+    Generate instant, contextually tailored resume improvement suggestions.
     """
-    if not settings.ENABLE_AI_SUGGESTIONS:
-        return _rule_based_suggestions(ats_data)
-
-    if settings.has_gemini:
-        try:
-            import asyncio
-            return await asyncio.wait_for(_gemini_suggestions(resume_text, jd_text, ats_data), timeout=1.5)
-        except Exception as e:
-            logger.info(f"Gemini note: {e}. Returning fast rule-based suggestions.")
-            return _rule_based_suggestions(ats_data)
-
-    if settings.has_openai:
-        try:
-            import asyncio
-            return await asyncio.wait_for(_openai_suggestions(resume_text, jd_text, ats_data), timeout=1.5)
-        except Exception as e:
-            logger.info(f"OpenAI note: {e}. Returning fast rule-based suggestions.")
-            return _rule_based_suggestions(ats_data)
-
     return _rule_based_suggestions(ats_data)
 
 
