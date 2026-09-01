@@ -57,12 +57,15 @@ app.include_router(company.router, prefix="/api/company", tags=["Company"])
 app.include_router(reports.router, prefix="/api/reports", tags=["Reports"])
 
 
+BUILD_ID = "v2.5-lockfree"
+
 @app.get("/api/health", tags=["Health"])
 async def health_check():
     """Health check endpoint."""
     return {
         "status": "healthy",
         "version": "1.0.0",
+        "build_id": BUILD_ID,
         "service": "AI Resume & Job Match Analyzer",
     }
 
