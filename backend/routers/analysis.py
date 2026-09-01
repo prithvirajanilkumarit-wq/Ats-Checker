@@ -1,7 +1,4 @@
-"""
-Analysis Router — ATS scoring, match scoring, AI suggestions, dashboard data
-"""
-from fastapi import APIRouter, HTTPException, Depends
+from fastapi import APIRouter, HTTPException, Depends, BackgroundTasks
 from sqlalchemy.ext.asyncio import AsyncSession
 from sqlalchemy import select
 
@@ -19,16 +16,19 @@ from backend.utils.logger import get_logger
 logger = get_logger(__name__)
 router = APIRouter()
 
-
 @router.post("/run", summary="Run full resume analysis")
-async def run_analysis(body: AnalysisRequest, db: AsyncSession = Depends(get_db)):
+async def run_analysis(
+    body: AnalysisRequest,
+    background_tasks: BackgroundTasks = None,
+    db: AsyncSession = Depends(get_db),
+):
     """
     Run complete analysis pipeline:
     1. Load resume and job description (from MEMORY_STORE or DB)
     2. Run ATS analysis
     3. Calculate match score
     4. Generate AI suggestions
-    5. Save and return all results
+    5. Save and return all results instantly
     """
     # Load resume
     resume = MEMORY_STORE["resumes"].get(body.resume_id)
@@ -54,78 +54,73 @@ async def run_analysis(body: AnalysisRequest, db: AsyncSession = Depends(get_db)
     if not resume_text:
         raise HTTPException(status_code=422, detail="Resume text is empty. Please re-upload.")
 
-    logger.info(f"Running analysis: Resume {resume.id} vs JD {jd.id}")
+    resume_id_val = getattr(resume, "id", None) or body.resume_id
+    jd_id_val = getattr(jd, "id", None) or body.job_description_id
+    logger.info(f"Running analysis: Resume {resume_id_val} vs JD {jd_id_val}")
 
     import asyncio
 
     # 1. ATS Analysis (Fast rule-based matching, ~0.001s)
     ats_data = analyze_ats(resume_text, jd_text, {
-        "experience_years": resume.experience_years or 0,
-        "education": resume.education or [],
+        "experience_years": getattr(resume, "experience_years", 0) or 0,
+        "education": getattr(resume, "education", []) or [],
     })
 
     # 2. Match Scoring (Fast TF-IDF cosine similarity, ~0.001s)
     match_data = calculate_match_score(resume_text, jd_text, ats_data)
 
-    # 3. AI Suggestions (with 3.0s strict timeout protection)
+    # 3. AI Suggestions (with 1.5s strict timeout protection)
     try:
-        suggestions_data = await asyncio.wait_for(generate_suggestions(resume_text, jd_text, ats_data), timeout=3.0)
+        suggestions_data = await asyncio.wait_for(generate_suggestions(resume_text, jd_text, ats_data), timeout=1.5)
     except Exception as e:
-        logger.warning(f"Suggestions note: {e}. Using fast rule-based suggestions.")
+        logger.info(f"Suggestions note: {e}. Using fast rule-based suggestions.")
         from backend.services.ai_suggestions import _rule_based_suggestions
         suggestions_data = _rule_based_suggestions(ats_data)
 
     from datetime import datetime
     now = datetime.utcnow()
 
-    # 4. Save to DB
-    analysis = ResumeAnalysis(
-        resume_id=resume.id,
-        job_description_id=jd.id,
-        ats_score=ats_data["overall_ats_score"],
-        match_score=match_data["match_score"],
-        skills_match_score=ats_data["skills_match_score"],
-        experience_match_score=ats_data["experience_match_score"],
-        education_match_score=ats_data["education_match_score"],
-        keyword_match_score=ats_data["keyword_match_score"],
-        formatting_score=ats_data["formatting_score"],
-        soft_skills_score=ats_data["soft_skills_score"],
-        hard_skills_score=ats_data["hard_skills_score"],
-        match_category=match_data["match_category"],
-        matched_keywords=ats_data["matched_keywords"],
-        missing_keywords=ats_data["missing_keywords"],
-        matched_skills=ats_data["matched_skills"],
-        missing_skills=ats_data["missing_skills"],
-        strengths=match_data["strengths"],
-        weaknesses=match_data["weaknesses"],
-        match_reasons=match_data["match_reasons"],
-        suggested_skills=suggestions_data["suggested_skills"],
-        recommended_certifications=suggestions_data["recommended_certifications"],
-        suggested_projects=suggestions_data["suggested_projects"],
-        resume_rewrite_suggestions=suggestions_data["resume_rewrite_suggestions"],
-        action_verb_suggestions=suggestions_data["action_verb_suggestions"],
-        grammar_suggestions=suggestions_data["grammar_suggestions"],
-        keyword_suggestions=suggestions_data["keyword_suggestions"],
-        quantify_suggestions=suggestions_data["quantify_suggestions"],
-        created_at=now,
-    )
+    # 4. Save to MEMORY_STORE instantly
+    analysis_id = len(MEMORY_STORE["analyses"]) + 1
+    
+    class AnalysisRecord:
+        pass
+    
+    analysis_rec = AnalysisRecord()
+    analysis_rec.id = analysis_id
+    analysis_rec.resume_id = resume_id_val
+    analysis_rec.job_description_id = jd_id_val
+    analysis_rec.ats_score = ats_data["overall_ats_score"]
+    analysis_rec.match_score = match_data["match_score"]
+    analysis_rec.skills_match_score = ats_data["skills_match_score"]
+    analysis_rec.experience_match_score = ats_data["experience_match_score"]
+    analysis_rec.education_match_score = ats_data["education_match_score"]
+    analysis_rec.keyword_match_score = ats_data["keyword_match_score"]
+    analysis_rec.formatting_score = ats_data["formatting_score"]
+    analysis_rec.soft_skills_score = ats_data["soft_skills_score"]
+    analysis_rec.hard_skills_score = ats_data["hard_skills_score"]
+    analysis_rec.match_category = match_data["match_category"]
+    analysis_rec.matched_keywords = ats_data["matched_keywords"]
+    analysis_rec.missing_keywords = ats_data["missing_keywords"]
+    analysis_rec.matched_skills = ats_data["matched_skills"]
+    analysis_rec.missing_skills = ats_data["missing_skills"]
+    analysis_rec.strengths = match_data["strengths"]
+    analysis_rec.weaknesses = match_data["weaknesses"]
+    analysis_rec.match_reasons = match_data["match_reasons"]
+    analysis_rec.suggested_skills = suggestions_data["suggested_skills"]
+    analysis_rec.recommended_certifications = suggestions_data["recommended_certifications"]
+    analysis_rec.suggested_projects = suggestions_data["suggested_projects"]
+    analysis_rec.resume_rewrite_suggestions = suggestions_data["resume_rewrite_suggestions"]
+    analysis_rec.action_verb_suggestions = suggestions_data["action_verb_suggestions"]
+    analysis_rec.grammar_suggestions = suggestions_data["grammar_suggestions"]
+    analysis_rec.keyword_suggestions = suggestions_data["keyword_suggestions"]
+    analysis_rec.quantify_suggestions = suggestions_data["quantify_suggestions"]
+    analysis_rec.created_at = now
 
-    try:
-        db.add(analysis)
-        await db.commit()
-    except Exception as e:
-        logger.warning(f"DB commit note: {e}")
-        try:
-            await db.rollback()
-        except Exception:
-            pass
+    MEMORY_STORE["analyses"][analysis_id] = analysis_rec
+    logger.info(f"Analysis complete. ID: {analysis_id}. ATS: {analysis_rec.ats_score} Match: {analysis_rec.match_score}")
 
-    analysis_id = getattr(analysis, "id", None) or len(MEMORY_STORE["analyses"]) + 1
-    analysis.id = analysis_id
-    MEMORY_STORE["analyses"][analysis_id] = analysis
-    logger.info(f"Analysis complete. ID: {analysis_id}. ATS: {analysis.ats_score} Match: {analysis.match_score}")
-
-    return _build_response(analysis, ats_data, match_data, suggestions_data)
+    return _build_response(analysis_rec, ats_data, match_data, suggestions_data)
 
 
 @router.get("/{analysis_id}", summary="Get saved analysis by ID")
