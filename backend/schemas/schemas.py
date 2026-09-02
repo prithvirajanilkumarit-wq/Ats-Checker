@@ -139,46 +139,69 @@ class AnalysisResponse(BaseModel):
 class CompanyAnalysisRequest(BaseModel):
     company_name: Optional[str] = None
     job_url: Optional[str] = None
+    target_role: Optional[str] = None
 
     class Config:
         json_schema_extra = {
             "example": {
-                "company_name": "Google",
-                "job_url": None
+                "company_name": "Tata Consultancy Services",
+                "job_url": None,
+                "target_role": "Software Engineer"
             }
         }
 
 
 class CompanyRating(BaseModel):
-    overall_rating: float
-    work_life_balance: float
-    salary_satisfaction: float
-    career_growth: float
-    culture_rating: float
-    interview_difficulty: float
+    overall_rating: float = 7.5
+    work_life_balance: float = 7.0
+    salary_satisfaction: float = 7.0
+    career_growth: float = 7.5
+    culture_rating: float = 7.5
+    interview_difficulty: float = 6.0
 
 
 class CompanyAnalysisResponse(BaseModel):
     id: int
     company_name: str
-    industry: Optional[str]
-    founded_year: Optional[str]
-    headquarters: Optional[str]
-    company_size: Optional[str]
-    employee_count: Optional[str]
-    website: Optional[str]
-    description: Optional[str]
+    industry: Optional[str] = None
+    founded_year: Optional[str] = None
+    headquarters: Optional[str] = None
+    company_size: Optional[str] = None
+    employee_count: Optional[str] = None
+    website: Optional[str] = None
+    description: Optional[str] = None
+
+    # Corporate & Financial Info
+    ticker: Optional[str] = None
+    stock_exchange: Optional[str] = None
+    company_type: Optional[str] = None
+    parent_company: Optional[str] = None
+    founders: List[str] = Field(default_factory=list)
+    ceo: Optional[str] = None
+    revenue: Optional[str] = None
+    products: List[str] = Field(default_factory=list)
+    services: List[str] = Field(default_factory=list)
+
+    # Career & Job Seeker Info
+    careers_url: Optional[str] = None
+    hiring_skills: List[str] = Field(default_factory=list)
+    common_roles: List[str] = Field(default_factory=list)
+    confidence_metadata: Dict[str, Any] = Field(default_factory=dict)
+    data_status: Optional[str] = "verified"
+    disambiguation_candidates: List[Dict[str, Any]] = Field(default_factory=list)
+
     ratings: CompanyRating
-    pros: List[str]
-    cons: List[str]
-    overall_recommendation: Optional[str]
-    salary_range: Optional[str]
-    average_salary: Optional[str]
-    sources: List[SourceCitation]
+    pros: List[str] = Field(default_factory=list)
+    cons: List[str] = Field(default_factory=list)
+    overall_recommendation: Optional[str] = None
+    salary_range: Optional[str] = None
+    average_salary: Optional[str] = None
+    sources: List[SourceCitation] = Field(default_factory=list)
     created_at: datetime
 
     class Config:
         from_attributes = True
+
 
 
 # ── Report Schemas ────────────────────────────────────────────────────────────

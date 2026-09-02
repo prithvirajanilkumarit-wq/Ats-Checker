@@ -134,6 +134,24 @@ class CompanyAnalysis(Base):
     culture_rating = Column(Float, default=0.0)
     interview_difficulty = Column(Float, default=0.0)
 
+    # Corporate & Financial Info
+    ticker = Column(String(50), nullable=True)
+    stock_exchange = Column(String(100), nullable=True)
+    company_type = Column(String(100), nullable=True)   # Public | Private | Subsidiary | Conglomerate
+    parent_company = Column(String(200), nullable=True)
+    founders = Column(JSON, default=list)
+    ceo = Column(String(200), nullable=True)
+    revenue = Column(String(100), nullable=True)
+    products = Column(JSON, default=list)
+    services = Column(JSON, default=list)
+
+    # Career & Job Seeker Info
+    careers_url = Column(String(500), nullable=True)
+    hiring_skills = Column(JSON, default=list)
+    common_roles = Column(JSON, default=list)
+    confidence_metadata = Column(JSON, default=dict)
+    data_status = Column(String(50), default="verified")
+
     # Review summaries
     pros = Column(JSON, default=list)
     cons = Column(JSON, default=list)
@@ -147,6 +165,7 @@ class CompanyAnalysis(Base):
     sources = Column(JSON, default=list)
 
     created_at = Column(DateTime, default=datetime.utcnow)
+
 
 
 class SavedReport(Base):

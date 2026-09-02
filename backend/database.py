@@ -36,12 +36,42 @@ class Base(DeclarativeBase):
 
 
 async def create_tables():
-    """Create all database tables on startup."""
+    """Create all database tables on startup and ensure schema migrations."""
     # Import all models to register them with Base.metadata
     from backend.models.models import Resume, JobDescription, ResumeAnalysis, CompanyAnalysis, SavedReport  # noqa
     async with engine.begin() as conn:
         await conn.run_sync(Base.metadata.create_all)
-    logger.info("Database tables ensured.")
+        # Ensure new company_analyses columns exist in SQLite
+        if "sqlite" in settings.DATABASE_URL:
+            def sync_migrate(sync_conn):
+                from sqlalchemy import text
+                res = sync_conn.execute(text("PRAGMA table_info(company_analyses);"))
+                cols = {row[1] for row in res.fetchall()}
+                new_cols = [
+                    ("ticker", "VARCHAR(50)"),
+                    ("stock_exchange", "VARCHAR(100)"),
+                    ("company_type", "VARCHAR(100)"),
+                    ("parent_company", "VARCHAR(200)"),
+                    ("founders", "JSON"),
+                    ("ceo", "VARCHAR(200)"),
+                    ("revenue", "VARCHAR(100)"),
+                    ("products", "JSON"),
+                    ("services", "JSON"),
+                    ("careers_url", "VARCHAR(500)"),
+                    ("hiring_skills", "JSON"),
+                    ("common_roles", "JSON"),
+                    ("confidence_metadata", "JSON"),
+                    ("data_status", "VARCHAR(50)"),
+                ]
+                for col_name, col_type in new_cols:
+                    if col_name not in cols:
+                        try:
+                            sync_conn.execute(text(f"ALTER TABLE company_analyses ADD COLUMN {col_name} {col_type};"))
+                        except Exception:
+                            pass
+            await conn.run_sync(sync_migrate)
+    logger.info("Database tables ensured and schema migrated.")
+
 
 
 

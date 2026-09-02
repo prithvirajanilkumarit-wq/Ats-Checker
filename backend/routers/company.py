@@ -21,8 +21,8 @@ async def analyze_company_endpoint(
     db: AsyncSession = Depends(get_db),
 ):
     """
-    Analyze a company using AI + web summarization.
-    Accepts company name or job URL.
+    Analyze a company using verified multi-source intelligence (Wikipedia, Wikidata, official portals).
+    Accepts company name, job URL, or optional target role.
     """
     if not body.company_name and not body.job_url:
         raise HTTPException(
@@ -31,7 +31,7 @@ async def analyze_company_endpoint(
         )
 
     company_name = body.company_name or "Unknown Company"
-    data = await analyze_company(company_name, body.job_url)
+    data = await analyze_company(company_name, body.job_url, body.target_role)
 
     # Save to DB
     ratings = data.get("ratings", {})
@@ -44,6 +44,20 @@ async def analyze_company_endpoint(
         employee_count=data.get("employee_count"),
         website=data.get("website"),
         description=data.get("description"),
+        ticker=data.get("ticker"),
+        stock_exchange=data.get("stock_exchange"),
+        company_type=data.get("company_type"),
+        parent_company=data.get("parent_company"),
+        founders=data.get("founders", []),
+        ceo=data.get("ceo"),
+        revenue=data.get("revenue"),
+        products=data.get("products", []),
+        services=data.get("services", []),
+        careers_url=data.get("careers_url"),
+        hiring_skills=data.get("hiring_skills", []),
+        common_roles=data.get("common_roles", []),
+        confidence_metadata=data.get("confidence_metadata", {}),
+        data_status=data.get("data_status", "verified"),
         overall_rating=ratings.get("overall_rating", 0.0),
         work_life_balance=ratings.get("work_life_balance", 0.0),
         salary_satisfaction=ratings.get("salary_satisfaction", 0.0),
@@ -73,6 +87,21 @@ async def analyze_company_endpoint(
         "employee_count": company_record.employee_count,
         "website": company_record.website,
         "description": company_record.description,
+        "ticker": company_record.ticker,
+        "stock_exchange": company_record.stock_exchange,
+        "company_type": company_record.company_type,
+        "parent_company": company_record.parent_company,
+        "founders": company_record.founders or [],
+        "ceo": company_record.ceo,
+        "revenue": company_record.revenue,
+        "products": company_record.products or [],
+        "services": company_record.services or [],
+        "careers_url": company_record.careers_url,
+        "hiring_skills": company_record.hiring_skills or [],
+        "common_roles": company_record.common_roles or [],
+        "confidence_metadata": company_record.confidence_metadata or {},
+        "data_status": company_record.data_status or "verified",
+        "disambiguation_candidates": data.get("disambiguation_candidates", []),
         "ratings": {
             "overall_rating": company_record.overall_rating,
             "work_life_balance": company_record.work_life_balance,
@@ -81,12 +110,12 @@ async def analyze_company_endpoint(
             "culture_rating": company_record.culture_rating,
             "interview_difficulty": company_record.interview_difficulty,
         },
-        "pros": company_record.pros,
-        "cons": company_record.cons,
+        "pros": company_record.pros or [],
+        "cons": company_record.cons or [],
         "overall_recommendation": company_record.overall_recommendation,
         "salary_range": company_record.salary_range,
         "average_salary": company_record.average_salary,
-        "sources": company_record.sources,
+        "sources": company_record.sources or [],
         "created_at": company_record.created_at.isoformat(),
     }
 
@@ -108,6 +137,20 @@ async def get_company_analysis(company_id: int, db: AsyncSession = Depends(get_d
         "employee_count": company.employee_count,
         "website": company.website,
         "description": company.description,
+        "ticker": company.ticker,
+        "stock_exchange": company.stock_exchange,
+        "company_type": company.company_type,
+        "parent_company": company.parent_company,
+        "founders": company.founders or [],
+        "ceo": company.ceo,
+        "revenue": company.revenue,
+        "products": company.products or [],
+        "services": company.services or [],
+        "careers_url": company.careers_url,
+        "hiring_skills": company.hiring_skills or [],
+        "common_roles": company.common_roles or [],
+        "confidence_metadata": company.confidence_metadata or {},
+        "data_status": company.data_status or "verified",
         "ratings": {
             "overall_rating": company.overall_rating,
             "work_life_balance": company.work_life_balance,
@@ -138,7 +181,10 @@ async def list_company_analyses(db: AsyncSession = Depends(get_db)):
             "company_name": c.company_name,
             "overall_rating": c.overall_rating,
             "industry": c.industry,
+            "ticker": c.ticker,
+            "company_type": c.company_type,
             "created_at": c.created_at.isoformat(),
         }
         for c in companies
     ]
+
