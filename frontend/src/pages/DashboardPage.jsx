@@ -138,22 +138,22 @@ export default function DashboardPage() {
           </div>
         </div>
 
-        <div style={{ display: 'grid', gridTemplateColumns: '280px 1fr', gap: '1.5rem', alignItems: 'start' }}>
+        <div style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fit, minmax(min(100%, 260px), 1fr))', gap: '1.5rem', alignItems: 'start' }}>
           {/* Sidebar — history */}
           <div className="card-flat" style={{ padding: '1.25rem' }}>
             <h3 style={{ fontWeight: 700, fontSize: '0.9375rem', color: '#374151', marginBottom: '1rem' }}>📋 Analysis History</h3>
-            <div style={{ display: 'flex', flexDirection: 'column', gap: '0.5rem' }}>
+            <div style={{ display: 'flex', flexDirection: 'column', gap: '0.5rem', maxHeight: '400px', overflowY: 'auto' }}>
               {analyses.map(a => (
                 <button key={a.id} onClick={() => loadDashboard(a.id)}
                   style={{
-                    width: '100%', textAlign: 'left', padding: '0.875rem', borderRadius: '0.75rem',
+                    width: '100%', textAlign: 'left', padding: '0.75rem', borderRadius: '0.75rem',
                     border: 'none', cursor: 'pointer', transition: 'all 0.2s',
                     background: selected === a.id ? '#DBEAFE' : 'transparent',
                     color: selected === a.id ? '#1E40AF' : '#374151',
                   }}
                 >
                   <div style={{ fontWeight: 700, fontSize: '0.875rem', marginBottom: '0.25rem' }}>Analysis #{a.id}</div>
-                  <div style={{ display: 'flex', gap: '0.5rem' }}>
+                  <div style={{ display: 'flex', gap: '0.5rem', flexWrap: 'wrap' }}>
                     <span style={{ fontSize: '0.75rem', fontWeight: 600 }}>ATS: {a.ats_score?.toFixed(0)}%</span>
                     <span style={{ fontSize: '0.75rem', color: '#6B7280' }}>·</span>
                     <span style={{ fontSize: '0.75rem', fontWeight: 600 }}>Match: {a.match_score?.toFixed(0)}%</span>
@@ -168,9 +168,9 @@ export default function DashboardPage() {
 
           {/* Main Dashboard */}
           {dashboard && (
-            <div style={{ display: 'flex', flexDirection: 'column', gap: '1.25rem' }}>
+            <div style={{ display: 'flex', flexDirection: 'column', gap: '1.25rem', minWidth: 0 }}>
               {/* Stats Row */}
-              <div style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fit, minmax(160px, 1fr))', gap: '1rem' }}>
+              <div style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fit, minmax(min(100%, 140px), 1fr))', gap: '0.75rem' }}>
                 <StatCard value={`${dashboard.ats_score?.toFixed(0)}%`} label="ATS Score" color="#1E40AF" icon="🎯" />
                 <StatCard value={`${dashboard.match_score?.toFixed(0)}%`} label="Match Score" color="#3B82F6" icon="🤝" />
                 <StatCard value={`${dashboard.skills_match?.toFixed(0)}%`} label="Skills Match" color="#10B981" icon="⚡" />
@@ -178,25 +178,25 @@ export default function DashboardPage() {
               </div>
 
               {/* Score Rings */}
-              <div className="card-flat" style={{ padding: '1.75rem', display: 'flex', gap: '2rem', justifyContent: 'center', flexWrap: 'wrap', alignItems: 'center' }}>
-                <ScoreRing score={dashboard.ats_score} label="Overall ATS" size={130} />
-                <ScoreRing score={dashboard.match_score} label="Match Score" size={130} />
-                <ScoreRing score={dashboard.skills_match} label="Skills Match" size={110} />
-                <ScoreRing score={dashboard.keyword_match} label="Keywords" size={110} />
-                <div style={{ display: 'flex', flexDirection: 'column', alignItems: 'center', gap: '0.75rem' }}>
+              <div className="card-flat" style={{ padding: '1.5rem', display: 'flex', gap: '1.5rem', justifyContent: 'center', flexWrap: 'wrap', alignItems: 'center' }}>
+                <ScoreRing score={dashboard.ats_score} label="Overall ATS" size={120} />
+                <ScoreRing score={dashboard.match_score} label="Match Score" size={120} />
+                <ScoreRing score={dashboard.skills_match} label="Skills Match" size={105} />
+                <ScoreRing score={dashboard.keyword_match} label="Keywords" size={105} />
+                <div style={{ display: 'flex', flexDirection: 'column', alignItems: 'center', gap: '0.5rem' }}>
                   <MatchBadge category={dashboard.match_category} />
                 </div>
               </div>
 
               {/* Bar Chart */}
-              <div className="card-flat" style={{ padding: '1.75rem' }}>
+              <div className="card-flat" style={{ padding: '1.5rem' }}>
                 <h3 style={{ fontWeight: 800, fontSize: '1.0625rem', marginBottom: '1.25rem' }}>📊 Score Comparison</h3>
-                <div style={{ height: 280 }}>
+                <div style={{ height: 260, width: '100%' }}>
                   <ResponsiveContainer width="100%" height="100%">
-                    <BarChart data={dashboard.bar_data} barCategoryGap="30%" margin={{ top: 5, right: 20, bottom: 5, left: 0 }}>
+                    <BarChart data={dashboard.bar_data} barCategoryGap="25%" margin={{ top: 5, right: 10, bottom: 5, left: -20 }}>
                       <CartesianGrid strokeDasharray="3 3" stroke="#F3F4F6" />
-                      <XAxis dataKey="name" tick={{ fontSize: 11, fill: '#6B7280' }} />
-                      <YAxis domain={[0, 100]} tick={{ fontSize: 11, fill: '#6B7280' }} tickFormatter={v => `${v}%`} />
+                      <XAxis dataKey="name" tick={{ fontSize: 10, fill: '#6B7280' }} />
+                      <YAxis domain={[0, 100]} tick={{ fontSize: 10, fill: '#6B7280' }} tickFormatter={v => `${v}%`} />
                       <Tooltip content={<CustomTooltip />} />
                       <Bar dataKey="value" radius={[6, 6, 0, 0]}>
                         {(dashboard.bar_data || []).map((entry, i) => (
@@ -209,20 +209,20 @@ export default function DashboardPage() {
               </div>
 
               {/* Radar + Progress */}
-              <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: '1.25rem' }}>
-                <div className="card-flat" style={{ padding: '1.75rem' }}>
+              <div className="grid-responsive-2">
+                <div className="card-flat" style={{ padding: '1.5rem' }}>
                   <h3 style={{ fontWeight: 800, fontSize: '1.0625rem', marginBottom: '1rem' }}>🎯 Radar Analysis</h3>
-                  <div style={{ height: 260 }}>
-                    <ResponsiveContainer>
+                  <div style={{ height: 240, width: '100%' }}>
+                    <ResponsiveContainer width="100%" height="100%">
                       <RadarChart data={dashboard.radar_data}>
                         <PolarGrid />
-                        <PolarAngleAxis dataKey="metric" tick={{ fontSize: 11, fill: '#6B7280' }} />
+                        <PolarAngleAxis dataKey="metric" tick={{ fontSize: 10, fill: '#6B7280' }} />
                         <Radar name="Score" dataKey="score" stroke="#1E40AF" fill="#1E40AF" fillOpacity={0.2} strokeWidth={2} />
                       </RadarChart>
                     </ResponsiveContainer>
                   </div>
                 </div>
-                <div className="card-flat" style={{ padding: '1.75rem' }}>
+                <div className="card-flat" style={{ padding: '1.5rem' }}>
                   <h3 style={{ fontWeight: 800, fontSize: '1.0625rem', marginBottom: '1.25rem' }}>📈 Detailed Scores</h3>
                   <div style={{ display: 'flex', flexDirection: 'column', gap: '0.875rem' }}>
                     {[
@@ -239,18 +239,18 @@ export default function DashboardPage() {
               </div>
 
               {/* Pie chart: matched vs missing */}
-              <div className="card-flat" style={{ padding: '1.75rem' }}>
+              <div className="card-flat" style={{ padding: '1.5rem' }}>
                 <h3 style={{ fontWeight: 800, fontSize: '1.0625rem', marginBottom: '1rem' }}>📋 Skills Distribution</h3>
-                <div style={{ display: 'grid', gridTemplateColumns: '200px 1fr', gap: '2rem', alignItems: 'center' }}>
-                  <div style={{ height: 200 }}>
-                    <ResponsiveContainer>
+                <div style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fit, minmax(min(100%, 180px), 1fr))', gap: '1.5rem', alignItems: 'center' }}>
+                  <div style={{ height: 180, width: '100%' }}>
+                    <ResponsiveContainer width="100%" height="100%">
                       <PieChart>
                         <Pie
                           data={[
                             { name: 'Matched', value: dashboard.matched_skills?.length || 0 },
                             { name: 'Missing', value: dashboard.missing_skills?.length || 0 },
                           ]}
-                          cx="50%" cy="50%" innerRadius={50} outerRadius={80}
+                          cx="50%" cy="50%" innerRadius={45} outerRadius={70}
                           dataKey="value" paddingAngle={3}
                         >
                           <Cell fill="#10B981" />
@@ -261,7 +261,7 @@ export default function DashboardPage() {
                       </PieChart>
                     </ResponsiveContainer>
                   </div>
-                  <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: '1rem' }}>
+                  <div style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fit, minmax(min(100%, 140px), 1fr))', gap: '1rem' }}>
                     <div>
                       <div style={{ fontWeight: 700, color: '#065F46', fontSize: '0.875rem', marginBottom: '0.625rem' }}>✅ Matched ({dashboard.matched_skills?.length})</div>
                       <div style={{ display: 'flex', flexWrap: 'wrap', gap: '0.375rem' }}>
@@ -279,22 +279,22 @@ export default function DashboardPage() {
               </div>
 
               {/* Strengths & Weaknesses */}
-              <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: '1.25rem' }}>
-                <div className="card-flat" style={{ padding: '1.75rem' }}>
+              <div className="grid-responsive-2">
+                <div className="card-flat" style={{ padding: '1.5rem' }}>
                   <h3 style={{ fontWeight: 800, fontSize: '1.0625rem', marginBottom: '1rem', color: '#065F46' }}>💪 Strengths</h3>
                   {(dashboard.strengths || []).map((s, i) => (
                     <div key={i} style={{ display: 'flex', gap: '0.5rem', marginBottom: '0.625rem', alignItems: 'flex-start' }}>
                       <span style={{ color: '#10B981', flexShrink: 0 }}>✓</span>
-                      <span style={{ fontSize: '0.875rem', color: '#374151' }}>{s}</span>
+                      <span style={{ fontSize: '0.875rem', color: '#374151', lineHeight: 1.5 }}>{s}</span>
                     </div>
                   ))}
                 </div>
-                <div className="card-flat" style={{ padding: '1.75rem' }}>
+                <div className="card-flat" style={{ padding: '1.5rem' }}>
                   <h3 style={{ fontWeight: 800, fontSize: '1.0625rem', marginBottom: '1rem', color: '#991B1B' }}>⚠️ Improvement Areas</h3>
                   {(dashboard.weaknesses || []).map((w, i) => (
                     <div key={i} style={{ display: 'flex', gap: '0.5rem', marginBottom: '0.625rem', alignItems: 'flex-start' }}>
                       <span style={{ color: '#EF4444', flexShrink: 0 }}>✗</span>
-                      <span style={{ fontSize: '0.875rem', color: '#374151' }}>{w}</span>
+                      <span style={{ fontSize: '0.875rem', color: '#374151', lineHeight: 1.5 }}>{w}</span>
                     </div>
                   ))}
                 </div>
@@ -306,3 +306,6 @@ export default function DashboardPage() {
     </div>
   )
 }
+
+
+

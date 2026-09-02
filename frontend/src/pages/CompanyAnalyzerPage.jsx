@@ -98,14 +98,14 @@ export default function CompanyAnalyzerPage() {
         </div>
 
         {/* Input Card */}
-        <div className="card" style={{ padding: '2rem', marginBottom: '2rem' }}>
+        <div className="card" style={{ padding: '1.5rem', marginBottom: '2rem' }}>
           {/* Mode Tabs */}
-          <div style={{ display: 'flex', gap: '0.5rem', marginBottom: '1.25rem', background: '#F3F4F6', padding: '0.25rem', borderRadius: '0.5rem', width: 'fit-content' }}>
+          <div style={{ display: 'flex', gap: '0.5rem', marginBottom: '1.25rem', background: '#F3F4F6', padding: '0.25rem', borderRadius: '0.5rem', width: 'fit-content', maxWidth: '100%', flexWrap: 'wrap' }}>
             {[['name', '🏢 Company Name'], ['url', '🔗 Job URL']].map(([m, label]) => (
               <button key={m} onClick={() => setMode(m)}
                 style={{
-                  padding: '0.5rem 1.25rem', borderRadius: '0.375rem', border: 'none', cursor: 'pointer',
-                  fontWeight: 600, fontSize: '0.9rem', transition: 'all 0.2s',
+                  padding: '0.5rem 1rem', borderRadius: '0.375rem', border: 'none', cursor: 'pointer',
+                  fontWeight: 600, fontSize: '0.875rem', transition: 'all 0.2s', minHeight: '38px',
                   background: mode === m ? 'white' : 'transparent',
                   color: mode === m ? '#1E40AF' : '#6B7280',
                   boxShadow: mode === m ? '0 1px 3px rgba(0,0,0,0.1)' : 'none',
@@ -114,27 +114,27 @@ export default function CompanyAnalyzerPage() {
             ))}
           </div>
 
-          <div style={{ display: 'flex', gap: '0.75rem', alignItems: 'flex-end' }}>
-            <div style={{ flex: 1 }}>
+          <div style={{ display: 'flex', gap: '0.75rem', flexWrap: 'wrap', alignItems: 'stretch' }}>
+            <div style={{ flex: '1 1 240px', minWidth: 0 }}>
               {mode === 'name' ? (
                 <div>
-                  <label style={{ display: 'block', fontWeight: 600, marginBottom: '0.5rem', color: '#374151', fontSize: '0.9rem' }}>Company Name</label>
-                  <input className="input" placeholder="e.g. Google, TCS, Infosys, Flipkart..." value={companyName} onChange={e => setCompanyName(e.target.value)} onKeyDown={e => e.key === 'Enter' && handleAnalyze()} />
+                  <label style={{ display: 'block', fontWeight: 600, marginBottom: '0.375rem', color: '#374151', fontSize: '0.875rem' }}>Company Name</label>
+                  <input className="input" placeholder="e.g. Google, TCS, Infosys, Flipkart..." value={companyName} onChange={e => setCompanyName(e.target.value)} onKeyDown={e => e.key === 'Enter' && handleAnalyze()} style={{ minHeight: '44px' }} />
                 </div>
               ) : (
-                <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: '0.75rem' }}>
+                <div style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fit, minmax(min(100%, 200px), 1fr))', gap: '0.75rem' }}>
                   <div>
-                    <label style={{ display: 'block', fontWeight: 600, marginBottom: '0.5rem', color: '#374151', fontSize: '0.9rem' }}>Job URL</label>
-                    <input className="input" type="url" placeholder="https://linkedin.com/jobs/..." value={jobUrl} onChange={e => setJobUrl(e.target.value)} />
+                    <label style={{ display: 'block', fontWeight: 600, marginBottom: '0.375rem', color: '#374151', fontSize: '0.875rem' }}>Job URL</label>
+                    <input className="input" type="url" placeholder="https://linkedin.com/jobs/..." value={jobUrl} onChange={e => setJobUrl(e.target.value)} style={{ minHeight: '44px' }} />
                   </div>
                   <div>
-                    <label style={{ display: 'block', fontWeight: 600, marginBottom: '0.5rem', color: '#374151', fontSize: '0.9rem' }}>Company Name (optional)</label>
-                    <input className="input" placeholder="Override company name..." value={companyName} onChange={e => setCompanyName(e.target.value)} />
+                    <label style={{ display: 'block', fontWeight: 600, marginBottom: '0.375rem', color: '#374151', fontSize: '0.875rem' }}>Company Name (optional)</label>
+                    <input className="input" placeholder="Override company name..." value={companyName} onChange={e => setCompanyName(e.target.value)} style={{ minHeight: '44px' }} />
                   </div>
                 </div>
               )}
             </div>
-            <button className="btn btn-primary" onClick={handleAnalyze} disabled={loading} style={{ height: 42, whiteSpace: 'nowrap' }}>
+            <button className="btn btn-primary" onClick={handleAnalyze} disabled={loading} style={{ minHeight: '44px', whiteSpace: 'nowrap', flex: '0 0 auto', alignSelf: 'flex-end', minWidth: 'min(100%, 160px)' }}>
               {loading ? <div className="spinner" style={{ width: 18, height: 18, borderWidth: 2 }} /> : <><Search size={16} /> Analyze Company</>}
             </button>
           </div>
@@ -144,10 +144,10 @@ export default function CompanyAnalyzerPage() {
 
         {/* Loading */}
         {loading && (
-          <div className="card" style={{ padding: '4rem 2rem', textAlign: 'center' }}>
-            <div className="spinner" style={{ margin: '0 auto 1.5rem', width: 52, height: 52 }} />
-            <h3 style={{ fontWeight: 800 }}>Analyzing Company...</h3>
-            <p style={{ color: '#6B7280' }}>Gathering information from multiple sources. This takes a few seconds.</p>
+          <div className="card" style={{ padding: '3rem 1.5rem', textAlign: 'center' }}>
+            <div className="spinner" style={{ margin: '0 auto 1.5rem', width: 44, height: 44 }} />
+            <h3 style={{ fontWeight: 800, fontSize: '1.25rem' }}>Analyzing Company...</h3>
+            <p style={{ color: '#6B7280', fontSize: '0.9rem' }}>Gathering information from multiple sources. This takes a few seconds.</p>
           </div>
         )}
 
@@ -155,21 +155,21 @@ export default function CompanyAnalyzerPage() {
         {company && !loading && (
           <div style={{ display: 'flex', flexDirection: 'column', gap: '1.5rem', animation: 'fadeIn 0.5s ease' }}>
             {/* Company Header */}
-            <div className="card-flat" style={{ padding: '2rem' }}>
+            <div className="card-flat" style={{ padding: '1.5rem' }}>
               <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'flex-start', flexWrap: 'wrap', gap: '1rem', marginBottom: '1.5rem' }}>
                 <div>
-                  <h2 style={{ fontSize: '1.75rem', fontWeight: 900, color: '#1F2937', marginBottom: '0.25rem' }}>{company.company_name}</h2>
-                  {company.industry && <p style={{ color: '#3B82F6', fontWeight: 600, fontSize: '1rem', margin: 0 }}>{company.industry}</p>}
+                  <h2 style={{ fontSize: 'clamp(1.5rem, 4vw, 1.875rem)', fontWeight: 900, color: '#1F2937', marginBottom: '0.25rem' }}>{company.company_name}</h2>
+                  {company.industry && <p style={{ color: '#3B82F6', fontWeight: 600, fontSize: '0.9375rem', margin: 0 }}>{company.industry}</p>}
                 </div>
-                <div style={{ textAlign: 'right' }}>
-                  <div style={{ fontSize: '2.5rem', fontWeight: 900, color: '#1E40AF', lineHeight: 1 }}>{company.ratings.overall_rating.toFixed(1)}</div>
-                  <div style={{ color: '#6B7280', fontSize: '0.875rem' }}>/ 10 Overall</div>
+                <div style={{ textAlign: 'left' }}>
+                  <div style={{ fontSize: '2.25rem', fontWeight: 900, color: '#1E40AF', lineHeight: 1 }}>{company.ratings.overall_rating.toFixed(1)}</div>
+                  <div style={{ color: '#6B7280', fontSize: '0.8125rem' }}>/ 10 Overall</div>
                   <StarRating value={company.ratings.overall_rating} />
                 </div>
               </div>
 
               {/* Info chips */}
-              <div style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fit, minmax(180px, 1fr))', gap: '0.75rem', marginBottom: '1.25rem' }}>
+              <div style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fit, minmax(min(100%, 150px), 1fr))', gap: '0.75rem', marginBottom: '1.25rem' }}>
                 <InfoChip icon={<Calendar size={16} />} label="Founded" value={company.founded_year} />
                 <InfoChip icon={<MapPin size={16} />} label="Headquarters" value={company.headquarters} />
                 <InfoChip icon={<Users size={16} />} label="Employees" value={company.employee_count} />
@@ -193,8 +193,8 @@ export default function CompanyAnalyzerPage() {
             </div>
 
             {/* Ratings + Radar */}
-            <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: '1.5rem' }}>
-              <div className="card-flat" style={{ padding: '1.75rem' }}>
+            <div className="grid-responsive-2">
+              <div className="card-flat" style={{ padding: '1.5rem' }}>
                 <h3 style={{ fontWeight: 800, fontSize: '1.0625rem', marginBottom: '1.25rem', color: '#1F2937' }}>📊 Ratings Breakdown</h3>
                 <RatingBar label="Overall Rating" value={company.ratings.overall_rating} />
                 <RatingBar label="Work-Life Balance" value={company.ratings.work_life_balance} />
@@ -209,9 +209,9 @@ export default function CompanyAnalyzerPage() {
                 </div>
               </div>
 
-              <div className="card-flat" style={{ padding: '1.75rem' }}>
+              <div className="card-flat" style={{ padding: '1.5rem' }}>
                 <h3 style={{ fontWeight: 800, fontSize: '1.0625rem', marginBottom: '1rem', color: '#1F2937' }}>🎯 Radar Overview</h3>
-                <div style={{ height: 240 }}>
+                <div style={{ height: 240, width: '100%' }}>
                   <ResponsiveContainer width="100%" height="100%">
                     <RadarChart data={radarData}>
                       <PolarGrid />
@@ -224,8 +224,8 @@ export default function CompanyAnalyzerPage() {
             </div>
 
             {/* Pros & Cons */}
-            <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: '1.5rem' }}>
-              <div className="card-flat" style={{ padding: '1.75rem' }}>
+            <div className="grid-responsive-2">
+              <div className="card-flat" style={{ padding: '1.5rem' }}>
                 <h3 style={{ fontWeight: 800, fontSize: '1.0625rem', marginBottom: '1rem', color: '#065F46' }}>👍 Pros</h3>
                 {company.pros.map((p, i) => (
                   <div key={i} style={{ display: 'flex', gap: '0.625rem', marginBottom: '0.75rem', alignItems: 'flex-start' }}>
@@ -234,7 +234,7 @@ export default function CompanyAnalyzerPage() {
                   </div>
                 ))}
               </div>
-              <div className="card-flat" style={{ padding: '1.75rem' }}>
+              <div className="card-flat" style={{ padding: '1.5rem' }}>
                 <h3 style={{ fontWeight: 800, fontSize: '1.0625rem', marginBottom: '1rem', color: '#991B1B' }}>👎 Cons</h3>
                 {company.cons.map((c, i) => (
                   <div key={i} style={{ display: 'flex', gap: '0.625rem', marginBottom: '0.75rem', alignItems: 'flex-start' }}>
@@ -246,27 +246,27 @@ export default function CompanyAnalyzerPage() {
             </div>
 
             {/* Salary + Recommendation */}
-            <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: '1.5rem' }}>
+            <div className="grid-responsive-2">
               {(company.salary_range || company.average_salary) && (
-                <div className="card-flat" style={{ padding: '1.75rem', background: 'linear-gradient(135deg, #F0FDF4, #DCFCE7)' }}>
+                <div className="card-flat" style={{ padding: '1.5rem', background: 'linear-gradient(135deg, #F0FDF4, #DCFCE7)' }}>
                   <h3 style={{ fontWeight: 800, fontSize: '1.0625rem', marginBottom: '1rem', color: '#065F46' }}>💰 Salary Information</h3>
                   {company.salary_range && (
                     <div style={{ marginBottom: '0.75rem' }}>
                       <div style={{ fontSize: '0.75rem', color: '#6B7280', fontWeight: 600, textTransform: 'uppercase', letterSpacing: '0.05em' }}>Salary Range</div>
-                      <div style={{ fontSize: '1.25rem', fontWeight: 800, color: '#065F46' }}>{company.salary_range}</div>
+                      <div style={{ fontSize: '1.125rem', fontWeight: 800, color: '#065F46' }}>{company.salary_range}</div>
                     </div>
                   )}
                   {company.average_salary && (
                     <div>
                       <div style={{ fontSize: '0.75rem', color: '#6B7280', fontWeight: 600, textTransform: 'uppercase', letterSpacing: '0.05em' }}>Average Salary</div>
-                      <div style={{ fontSize: '1.125rem', fontWeight: 700, color: '#047857' }}>{company.average_salary}</div>
+                      <div style={{ fontSize: '1.0625rem', fontWeight: 700, color: '#047857' }}>{company.average_salary}</div>
                     </div>
                   )}
                 </div>
               )}
 
               {company.overall_recommendation && (
-                <div className="card-flat" style={{ padding: '1.75rem', background: 'linear-gradient(135deg, #EFF6FF, #DBEAFE)' }}>
+                <div className="card-flat" style={{ padding: '1.5rem', background: 'linear-gradient(135deg, #EFF6FF, #DBEAFE)' }}>
                   <h3 style={{ fontWeight: 800, fontSize: '1.0625rem', marginBottom: '0.875rem', color: '#1E40AF' }}>🎯 Overall Recommendation</h3>
                   <p style={{ color: '#1E3A8A', lineHeight: 1.7, fontSize: '0.9375rem', margin: 0 }}>
                     {company.overall_recommendation}
@@ -277,7 +277,7 @@ export default function CompanyAnalyzerPage() {
 
             {/* Sources */}
             {company.sources?.length > 0 && (
-              <div className="card-flat" style={{ padding: '1.75rem' }}>
+              <div className="card-flat" style={{ padding: '1.5rem' }}>
                 <h3 style={{ fontWeight: 800, fontSize: '1.0625rem', marginBottom: '0.75rem', color: '#1F2937' }}>📚 Sources</h3>
                 <p style={{ fontSize: '0.875rem', color: '#6B7280', marginBottom: '1rem' }}>
                   All information is sourced from publicly available platforms. Click to visit and verify.
@@ -291,3 +291,4 @@ export default function CompanyAnalyzerPage() {
     </div>
   )
 }
+

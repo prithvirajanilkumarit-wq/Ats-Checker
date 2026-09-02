@@ -17,22 +17,22 @@ export default function Footer() {
   }
 
   return (
-    <footer style={{ background: '#1E293B', color: '#CBD5E1', marginTop: 'auto' }}>
-      <div className="container" style={{ padding: '3.5rem 1.5rem 2rem' }}>
-        <div style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fit, minmax(200px, 1fr))', gap: '2.5rem', marginBottom: '2.5rem' }}>
+    <footer style={{ background: '#1E293B', color: '#CBD5E1', marginTop: 'auto', width: '100%' }}>
+      <div className="container" style={{ padding: 'clamp(2rem, 5vw, 3.5rem) 1.5rem 2rem' }}>
+        <div style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fit, minmax(min(100%, 180px), 1fr))', gap: '2rem', marginBottom: '2rem' }}>
           {/* Brand */}
           <div>
             <div style={{ marginBottom: '1rem' }}>
               <img
                 src="/logo.png"
                 alt="ATS Checker"
-                style={{ height: '52px', width: 'auto', background: '#FFFFFF', padding: '6px 12px', borderRadius: '10px', objectFit: 'contain' }}
+                style={{ height: '44px', maxWidth: '160px', width: 'auto', background: '#FFFFFF', padding: '4px 10px', borderRadius: '8px', objectFit: 'contain' }}
               />
             </div>
             <p style={{ fontSize: '0.875rem', lineHeight: 1.6, maxWidth: 260, color: '#94A3B8' }}>
               AI-powered resume analysis platform. Optimize your resume, understand your match score, and research companies.
             </p>
-            <div style={{ display: 'flex', gap: '0.75rem', marginTop: '1.25rem' }}>
+            <div style={{ display: 'flex', gap: '0.75rem', marginTop: '1rem' }}>
               {[
                 { icon: <GitBranch size={18} />, href: '#' },
                 { icon: <ExternalLink size={18} />, href: '#' },
@@ -55,8 +55,8 @@ export default function Footer() {
           {/* Links */}
           {Object.entries(links).map(([group, items]) => (
             <div key={group}>
-              <h4 style={{ color: 'white', fontWeight: 700, marginBottom: '1rem', fontSize: '0.9375rem' }}>{group}</h4>
-              <ul style={{ listStyle: 'none', padding: 0, margin: 0, display: 'flex', flexDirection: 'column', gap: '0.625rem' }}>
+              <h4 style={{ color: 'white', fontWeight: 700, marginBottom: '0.875rem', fontSize: '0.9375rem' }}>{group}</h4>
+              <ul style={{ listStyle: 'none', padding: 0, margin: 0, display: 'flex', flexDirection: 'column', gap: '0.5rem' }}>
                 {items.map(item => (
                   <li key={item.label}>
                     <Link to={item.to} style={{ color: '#94A3B8', textDecoration: 'none', fontSize: '0.875rem', transition: 'color 0.2s' }}
@@ -73,8 +73,8 @@ export default function Footer() {
 
           {/* Tech Stack */}
           <div>
-            <h4 style={{ color: 'white', fontWeight: 700, marginBottom: '1rem', fontSize: '0.9375rem' }}>Tech Stack</h4>
-            <div style={{ display: 'flex', flexWrap: 'wrap', gap: '0.5rem' }}>
+            <h4 style={{ color: 'white', fontWeight: 700, marginBottom: '0.875rem', fontSize: '0.9375rem' }}>Tech Stack</h4>
+            <div style={{ display: 'flex', flexWrap: 'wrap', gap: '0.375rem' }}>
               {['React', 'FastAPI', 'Python', 'OpenAI', 'spaCy', 'SQLite', 'Recharts', 'Tailwind'].map(t => (
                 <span key={t} style={{
                   padding: '0.2rem 0.625rem', borderRadius: '999px',
@@ -86,7 +86,7 @@ export default function Footer() {
         </div>
 
         {/* Bottom bar */}
-        <div style={{ borderTop: '1px solid #334155', paddingTop: '1.5rem', display: 'flex', justifyContent: 'space-between', alignItems: 'center', flexWrap: 'wrap', gap: '0.75rem' }}>
+        <div style={{ borderTop: '1px solid #334155', paddingTop: '1.25rem', display: 'flex', justifyContent: 'space-between', alignItems: 'center', flexWrap: 'wrap', gap: '0.75rem' }}>
           <p style={{ fontSize: '0.8125rem', color: '#64748B', margin: 0 }}>
             © {year} AI Resume & Job Match Analyzer. MCA Final Year Project.
           </p>
@@ -98,3 +98,4 @@ export default function Footer() {
     </footer>
   )
 }
+

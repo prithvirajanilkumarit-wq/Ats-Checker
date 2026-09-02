@@ -114,15 +114,21 @@ export default function HomePage() {
   return (
     <div>
       {/* ── Hero ─────────────────────────────────────────────── */}
-      <section className="hero-gradient" style={{ padding: '5rem 0 4rem' }}>
+      <section className="hero-gradient" style={{ padding: 'clamp(3rem, 7vw, 5rem) 0 clamp(2.5rem, 5vw, 4rem)' }}>
         <div className="container" style={{ textAlign: 'center' }}>
           {/* Badge */}
-          <div style={{ display: 'inline-flex', alignItems: 'center', gap: '0.625rem', background: '#DBEAFE', color: '#1E40AF', padding: '0.375rem 1rem', borderRadius: '999px', fontSize: '0.875rem', fontWeight: 700, marginBottom: '1.5rem', border: '1px solid #BFDBFE' }}>
-            <img src="/logo.png" alt="ATS Resume Checker" style={{ height: '24px', width: 'auto', borderRadius: '4px' }} />
-            ATS Resume Checker — Scan • Analyze • Improve
+          <div style={{
+            display: 'inline-flex', alignItems: 'center', gap: '0.5rem',
+            background: '#DBEAFE', color: '#1E40AF', padding: '0.375rem 0.875rem',
+            borderRadius: '999px', fontSize: '0.8125rem', fontWeight: 700,
+            marginBottom: '1.5rem', border: '1px solid #BFDBFE',
+            maxWidth: '100%', flexWrap: 'wrap', justifyContent: 'center'
+          }}>
+            <img src="/logo.png" alt="ATS Resume Checker" style={{ height: '22px', width: 'auto', borderRadius: '4px' }} />
+            <span>ATS Resume Checker — Scan • Analyze • Improve</span>
           </div>
 
-          <h1 style={{ fontSize: 'clamp(2.25rem, 6vw, 4rem)', fontWeight: 900, lineHeight: 1.1, marginBottom: '1.25rem', color: '#0F172A' }}>
+          <h1 style={{ fontSize: 'clamp(2rem, 5.5vw, 3.75rem)', fontWeight: 900, lineHeight: 1.15, marginBottom: '1.25rem', color: '#0F172A' }}>
             Land Your Dream Job with
             <br />
             <span style={{ background: 'linear-gradient(135deg, #1E40AF, #3B82F6)', WebkitBackgroundClip: 'text', WebkitTextFillColor: 'transparent' }}>
@@ -130,21 +136,28 @@ export default function HomePage() {
             </span>
           </h1>
 
-          <p style={{ fontSize: '1.1875rem', color: '#4B5563', maxWidth: 600, margin: '0 auto 2.5rem', lineHeight: 1.7 }}>
+          <p style={{ fontSize: 'clamp(1rem, 2.5vw, 1.1875rem)', color: '#4B5563', maxWidth: 600, margin: '0 auto 2rem', lineHeight: 1.65 }}>
             Get your ATS score, resume match analysis, AI-powered suggestions, and company insights — all in one beautiful dashboard.
           </p>
 
-          <div style={{ display: 'flex', gap: '1rem', justifyContent: 'center', flexWrap: 'wrap' }}>
-            <Link to="/resume-analyzer" className="btn btn-primary btn-lg" style={{ gap: '0.5rem' }}>
+          <div style={{ display: 'flex', gap: '0.75rem', justifyContent: 'center', flexWrap: 'wrap' }}>
+            <Link to="/resume-analyzer" className="btn btn-primary btn-lg" style={{ gap: '0.5rem', minWidth: 'min(100%, 220px)', minHeight: '44px' }}>
               <Upload size={18} /> Analyze My Resume
             </Link>
-            <Link to="/company-analyzer" className="btn btn-outline btn-lg">
+            <Link to="/company-analyzer" className="btn btn-outline btn-lg" style={{ minWidth: 'min(100%, 200px)', minHeight: '44px' }}>
               <Building2 size={18} /> Research a Company
             </Link>
           </div>
 
           {/* Stats */}
-          <div style={{ display: 'flex', justifyContent: 'center', gap: '3rem', marginTop: '3.5rem', flexWrap: 'wrap' }}>
+          <div style={{
+            display: 'grid',
+            gridTemplateColumns: 'repeat(auto-fit, minmax(min(100%, 130px), 1fr))',
+            gap: '1.5rem',
+            marginTop: '3rem',
+            maxWidth: 680,
+            margin: '3rem auto 0',
+          }}>
             <StatCard value="10+" label="ATS Metrics Analyzed" />
             <StatCard value="AI" label="Advanced Engine" />
             <StatCard value="PDF+DOCX" label="File Formats" />
@@ -157,11 +170,11 @@ export default function HomePage() {
       <section className="section" style={{ background: 'white' }}>
         <div className="container">
           <SectionHeader label="Simple Process" title="How It Works" subtitle="Four steps to a stronger resume and a smarter job search" />
-          <div style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fit, minmax(220px, 1fr))', gap: '1.5rem', position: 'relative' }}>
+          <div style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fit, minmax(min(100%, 220px), 1fr))', gap: '1.5rem', position: 'relative' }}>
             {steps.map((step, i) => (
-              <div key={i} style={{ display: 'flex', flexDirection: 'column', alignItems: 'center', textAlign: 'center', padding: '1.5rem' }}>
+              <div key={i} style={{ display: 'flex', flexDirection: 'column', alignItems: 'center', textAlign: 'center', padding: '1.25rem' }}>
                 <div style={{
-                  width: 56, height: 56, borderRadius: '50%', marginBottom: '1rem',
+                  width: 52, height: 52, borderRadius: '50%', marginBottom: '1rem',
                   background: `linear-gradient(135deg, ${step.color}, ${step.color}CC)`,
                   display: 'flex', alignItems: 'center', justifyContent: 'center',
                   color: 'white', boxShadow: `0 4px 12px ${step.color}40`,
@@ -181,7 +194,7 @@ export default function HomePage() {
       <section className="section">
         <div className="container">
           <SectionHeader label="Features" title="Everything You Need to Succeed" subtitle="A complete toolkit for modern job seekers — from resume scoring to company research" />
-          <div style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fit, minmax(300px, 1fr))', gap: '1.25rem' }}>
+          <div style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fit, minmax(min(100%, 280px), 1fr))', gap: '1.25rem' }}>
             {features.map((f, i) => (
               <FeatureCard key={i} {...f} />
             ))}
@@ -190,15 +203,15 @@ export default function HomePage() {
       </section>
 
       {/* ── CTA Banner ────────────────────────────────────────── */}
-      <section style={{ background: 'linear-gradient(135deg, #1E40AF 0%, #1E3A8A 100%)', padding: '4rem 0' }}>
+      <section style={{ background: 'linear-gradient(135deg, #1E40AF 0%, #1E3A8A 100%)', padding: '3.5rem 0' }}>
         <div className="container" style={{ textAlign: 'center' }}>
-          <h2 style={{ color: 'white', fontSize: 'clamp(1.75rem, 4vw, 2.5rem)', marginBottom: '1rem' }}>
+          <h2 style={{ color: 'white', fontSize: 'clamp(1.5rem, 4vw, 2.25rem)', marginBottom: '1rem' }}>
             Ready to Optimize Your Resume?
           </h2>
           <p style={{ color: '#BFDBFE', fontSize: '1.0625rem', marginBottom: '2rem', maxWidth: 480, margin: '0 auto 2rem' }}>
             Upload your resume and get an instant AI-powered analysis, completely free.
           </p>
-          <Link to="/resume-analyzer" className="btn btn-lg" style={{ background: 'white', color: '#1E40AF', fontWeight: 700 }}>
+          <Link to="/resume-analyzer" className="btn btn-lg" style={{ background: 'white', color: '#1E40AF', fontWeight: 700, minHeight: '44px' }}>
             Start Free Analysis <ArrowRight size={18} />
           </Link>
         </div>
@@ -208,7 +221,7 @@ export default function HomePage() {
       <section className="section" style={{ background: 'white' }}>
         <div className="container">
           <SectionHeader label="Success Stories" title="What Job Seekers Say" subtitle="Real feedback from students and professionals who used this tool" />
-          <div style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fit, minmax(280px, 1fr))', gap: '1.25rem' }}>
+          <div style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fit, minmax(min(100%, 260px), 1fr))', gap: '1.25rem' }}>
             {testimonials.map((t, i) => <Testimonial key={i} {...t} />)}
           </div>
         </div>

@@ -40,9 +40,9 @@ function ResumeDropzone({ onUploaded }) {
   })
 
   return (
-    <div>
+    <div style={{ width: '100%' }}>
       <div {...getRootProps()} className={`dropzone ${isDragActive ? 'active' : ''}`}
-        style={{ padding: '3rem 2rem', textAlign: 'center', cursor: uploading ? 'not-allowed' : 'pointer' }}>
+        style={{ padding: 'clamp(1.5rem, 5vw, 3rem) clamp(1rem, 3vw, 2rem)', textAlign: 'center', cursor: uploading ? 'not-allowed' : 'pointer', width: '100%' }}>
         <input {...getInputProps()} />
         {uploading ? (
           <div>
@@ -56,18 +56,18 @@ function ResumeDropzone({ onUploaded }) {
         ) : (
           <div>
             <div style={{
-              width: 64, height: 64, background: '#DBEAFE', borderRadius: '1rem',
+              width: 56, height: 56, background: '#DBEAFE', borderRadius: '1rem',
               display: 'flex', alignItems: 'center', justifyContent: 'center', margin: '0 auto 1rem',
             }}>
-              <Upload size={28} color="#1E40AF" />
+              <Upload size={26} color="#1E40AF" />
             </div>
             <p style={{ fontWeight: 700, fontSize: '1.0625rem', color: '#1F2937', marginBottom: '0.375rem' }}>
               {isDragActive ? 'Drop your resume here' : 'Drag & drop your resume'}
             </p>
-            <p style={{ color: '#6B7280', fontSize: '0.9rem', marginBottom: '1rem' }}>
+            <p style={{ color: '#6B7280', fontSize: '0.875rem', marginBottom: '1rem' }}>
               or click to browse files
             </p>
-            <div style={{ display: 'flex', gap: '0.5rem', justifyContent: 'center' }}>
+            <div style={{ display: 'flex', gap: '0.5rem', justifyContent: 'center', flexWrap: 'wrap' }}>
               <span className="tag tag-blue">PDF</span>
               <span className="tag tag-blue">DOCX</span>
               <span className="tag tag-gray">Max 10MB</span>
@@ -83,26 +83,26 @@ function ResumeDropzone({ onUploaded }) {
 // ── Resume Preview Card ────────────────────────────────────────
 function ResumePreview({ resume }) {
   return (
-    <div className="card-flat" style={{ padding: '1.5rem' }}>
+    <div className="card-flat" style={{ padding: '1.25rem', width: '100%' }}>
       <div style={{ display: 'flex', alignItems: 'center', gap: '0.75rem', marginBottom: '1.25rem' }}>
-        <div style={{ width: 40, height: 40, background: '#DBEAFE', borderRadius: '10px', display: 'flex', alignItems: 'center', justifyContent: 'center' }}>
-          <FileText size={20} color="#1E40AF" />
+        <div style={{ width: 38, height: 38, background: '#DBEAFE', borderRadius: '10px', display: 'flex', alignItems: 'center', justifyContent: 'center', flexShrink: 0 }}>
+          <FileText size={18} color="#1E40AF" />
         </div>
-        <div>
-          <div style={{ fontWeight: 700, color: '#1F2937' }}>{resume.filename}</div>
+        <div style={{ minWidth: 0, flex: 1 }}>
+          <div style={{ fontWeight: 700, color: '#1F2937', overflow: 'hidden', textOverflow: 'ellipsis', whiteSpace: 'nowrap', fontSize: '0.9375rem' }}>{resume.filename}</div>
           <div style={{ fontSize: '0.8125rem', color: '#10B981', fontWeight: 600 }}>✓ Parsed successfully</div>
         </div>
       </div>
-      <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: '0.75rem', fontSize: '0.875rem' }}>
+      <div style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fit, minmax(min(100%, 140px), 1fr))', gap: '0.625rem', fontSize: '0.875rem' }}>
         {[
           ['👤 Name', resume.candidate_name],
           ['📧 Email', resume.email],
           ['📱 Phone', resume.phone],
           ['💼 Experience', `${resume.experience_years || 0} years`],
         ].map(([l, v]) => v ? (
-          <div key={l} style={{ background: '#F8FAFF', padding: '0.625rem', borderRadius: '0.5rem' }}>
+          <div key={l} style={{ background: '#F8FAFF', padding: '0.625rem', borderRadius: '0.5rem', minWidth: 0, overflowWrap: 'break-word' }}>
             <div style={{ color: '#6B7280', fontSize: '0.75rem', marginBottom: '0.125rem' }}>{l.split(' ')[0]} {l.split(' ').slice(1).join(' ')}</div>
-            <div style={{ fontWeight: 600, color: '#1F2937', fontSize: '0.875rem' }}>{v}</div>
+            <div style={{ fontWeight: 600, color: '#1F2937', fontSize: '0.875rem', overflow: 'hidden', textOverflow: 'ellipsis' }}>{v}</div>
           </div>
         ) : null)}
       </div>
@@ -149,14 +149,14 @@ function JDInputPanel({ onSubmitted }) {
   }
 
   return (
-    <div>
+    <div style={{ width: '100%' }}>
       {/* Mode tabs */}
-      <div style={{ display: 'flex', gap: '0.5rem', marginBottom: '1rem', background: '#F3F4F6', padding: '0.25rem', borderRadius: '0.5rem' }}>
+      <div style={{ display: 'flex', gap: '0.5rem', marginBottom: '1rem', background: '#F3F4F6', padding: '0.25rem', borderRadius: '0.5rem', width: '100%' }}>
         {[['text', '📝 Paste Text'], ['url', '🔗 Enter URL']].map(([m, label]) => (
           <button key={m} onClick={() => setMode(m)}
             style={{
-              flex: 1, padding: '0.5rem 1rem', borderRadius: '0.375rem', border: 'none', cursor: 'pointer',
-              fontWeight: 600, fontSize: '0.9rem', transition: 'all 0.2s',
+              flex: 1, padding: '0.5rem 0.75rem', borderRadius: '0.375rem', border: 'none', cursor: 'pointer',
+              fontWeight: 600, fontSize: '0.875rem', transition: 'all 0.2s', minHeight: '38px',
               background: mode === m ? 'white' : 'transparent',
               color: mode === m ? '#1E40AF' : '#6B7280',
               boxShadow: mode === m ? '0 1px 3px rgba(0,0,0,0.1)' : 'none',
@@ -168,7 +168,7 @@ function JDInputPanel({ onSubmitted }) {
       {mode === 'text' ? (
         <textarea
           className="input textarea"
-          style={{ minHeight: 180 }}
+          style={{ minHeight: 180, width: '100%' }}
           placeholder="Paste the full job description here...&#10;&#10;Include requirements, responsibilities, and skills."
           value={text}
           onChange={e => setText(e.target.value)}
@@ -181,23 +181,24 @@ function JDInputPanel({ onSubmitted }) {
             placeholder="https://www.linkedin.com/jobs/view/..."
             value={url}
             onChange={e => setUrl(e.target.value)}
+            style={{ width: '100%' }}
           />
-          <div style={{ display: 'flex', flexWrap: 'wrap', gap: '0.5rem', marginTop: '0.75rem' }}>
+          <div style={{ display: 'flex', flexWrap: 'wrap', gap: '0.375rem', marginTop: '0.75rem' }}>
             {['LinkedIn', 'Naukri', 'Indeed', 'Foundit', 'Glassdoor'].map(s => (
               <span key={s} className="tag tag-blue" style={{ fontSize: '0.75rem' }}>✓ {s}</span>
             ))}
           </div>
-          <p style={{ fontSize: '0.8125rem', color: '#6B7280', marginTop: '0.5rem' }}>
+          <p style={{ fontSize: '0.8125rem', color: '#6B7280', marginTop: '0.5rem', lineHeight: 1.5 }}>
             * URL scraping works where the site permits automated access. If it fails, please paste the text.
           </p>
         </div>
       )}
 
-      {error && <ErrorAlert message={error} onDismiss={() => setError('')} />}
+      {error && <ErrorAlert message={error} onDismiss={() => setError('')} style={{ marginTop: '0.875rem' }} />}
 
       <button
         className="btn btn-primary"
-        style={{ marginTop: '1rem', width: '100%' }}
+        style={{ marginTop: '1rem', width: '100%', minHeight: '44px' }}
         onClick={handleSubmit}
         disabled={loading}
       >
@@ -221,18 +222,18 @@ function ATSScorePanel({ ats }) {
   const radarData = metrics.map(m => ({ metric: m.label.replace(' Match', '').replace(' Score', ''), score: m.value, fullMark: 100 }))
 
   return (
-    <div className="card-flat" style={{ padding: '1.75rem' }}>
-      <h3 style={{ fontWeight: 800, fontSize: '1.125rem', marginBottom: '1.5rem', color: '#1F2937' }}>
+    <div className="card-flat" style={{ padding: '1.5rem', width: '100%' }}>
+      <h3 style={{ fontWeight: 800, fontSize: '1.125rem', marginBottom: '1.25rem', color: '#1F2937' }}>
         📊 ATS Score Breakdown
       </h3>
-      <div style={{ display: 'flex', gap: '2rem', alignItems: 'center', flexWrap: 'wrap', marginBottom: '1.5rem' }}>
-        <ScoreRing score={ats.overall_ats_score} label="ATS Score" size={130} />
-        <div style={{ flex: 1, minWidth: 200, display: 'flex', flexDirection: 'column', gap: '0.875rem' }}>
+      <div style={{ display: 'flex', gap: '1.5rem', alignItems: 'center', flexWrap: 'wrap', justifyContent: 'center', marginBottom: '1.5rem' }}>
+        <ScoreRing score={ats.overall_ats_score} label="ATS Score" size={120} />
+        <div style={{ flex: '1 1 220px', minWidth: 'min(100%, 200px)', display: 'flex', flexDirection: 'column', gap: '0.75rem' }}>
           {metrics.map(m => <ProgressBar key={m.label} label={m.label} value={m.value} />)}
         </div>
       </div>
       {/* Radar Chart */}
-      <div style={{ height: 260, marginTop: '1rem' }}>
+      <div style={{ height: 250, width: '100%', marginTop: '1rem', minWidth: 0 }}>
         <ResponsiveContainer width="100%" height="100%">
           <RadarChart data={radarData}>
             <PolarGrid />
@@ -246,17 +247,17 @@ function ATSScorePanel({ ats }) {
 }
 
 // ── Skills Panel ───────────────────────────────────────────────
-function SkillsPanel({ matched, missing }) {
+function SkillsPanel({ matched = [], missing = [] }) {
   return (
-    <div className="card-flat" style={{ padding: '1.75rem' }}>
+    <div className="card-flat" style={{ padding: '1.5rem', width: '100%' }}>
       <h3 style={{ fontWeight: 800, fontSize: '1.125rem', marginBottom: '1.25rem', color: '#1F2937' }}>🎯 Skills Analysis</h3>
-      <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: '1.25rem' }}>
+      <div style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fit, minmax(min(100%, 240px), 1fr))', gap: '1.25rem' }}>
         <div>
           <div style={{ fontWeight: 700, color: '#065F46', fontSize: '0.875rem', marginBottom: '0.625rem' }}>
             ✅ Matched Skills ({matched.length})
           </div>
           <div style={{ display: 'flex', flexWrap: 'wrap', gap: '0.375rem' }}>
-            {matched.map(s => <SkillTag key={s} name={s} type="matched" />)}
+            {matched.length > 0 ? matched.map(s => <SkillTag key={s} name={s} type="matched" />) : <span style={{ color: '#6B7280', fontSize: '0.875rem' }}>No direct skill matches</span>}
           </div>
         </div>
         <div>
@@ -264,7 +265,7 @@ function SkillsPanel({ matched, missing }) {
             ❌ Missing Skills ({missing.length})
           </div>
           <div style={{ display: 'flex', flexWrap: 'wrap', gap: '0.375rem' }}>
-            {missing.map(s => <SkillTag key={s} name={s} type="missing" />)}
+            {missing.length > 0 ? missing.map(s => <SkillTag key={s} name={s} type="missing" />) : <span style={{ color: '#10B981', fontSize: '0.875rem' }}>All required skills matched!</span>}
           </div>
         </div>
       </div>
@@ -273,36 +274,36 @@ function SkillsPanel({ matched, missing }) {
 }
 
 // ── Match Score Panel ──────────────────────────────────────────
-function MatchScorePanel({ match }) {
+function MatchScorePanel({ match = {} }) {
   return (
-    <div className="card-flat" style={{ padding: '1.75rem' }}>
+    <div className="card-flat" style={{ padding: '1.5rem', width: '100%' }}>
       <h3 style={{ fontWeight: 800, fontSize: '1.125rem', marginBottom: '1.25rem', color: '#1F2937' }}>🤝 Resume Match Analysis</h3>
-      <div style={{ display: 'flex', alignItems: 'center', gap: '1.5rem', marginBottom: '1.5rem', flexWrap: 'wrap' }}>
-        <ScoreRing score={match.match_score} label="Match Score" size={110} />
-        <div>
+      <div style={{ display: 'flex', alignItems: 'center', gap: '1.25rem', marginBottom: '1.5rem', flexWrap: 'wrap', justifyContent: 'center' }}>
+        <ScoreRing score={match.match_score || 0} label="Match Score" size={110} />
+        <div style={{ textAlign: 'center', minWidth: 'min(100%, 260px)' }}>
           <MatchBadge category={match.match_category} />
-          <p style={{ color: '#6B7280', fontSize: '0.875rem', marginTop: '0.5rem', maxWidth: 340 }}>
-            Based on semantic similarity + skills, experience, education, and keyword overlap.
+          <p style={{ color: '#6B7280', fontSize: '0.875rem', marginTop: '0.5rem', maxWidth: 340, lineHeight: 1.5, margin: '0.5rem auto 0' }}>
+            Based on semantic TF-IDF similarity + skills, experience, education, and keyword overlap.
           </p>
         </div>
       </div>
       {/* Reasons */}
-      <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: '1rem' }}>
+      <div style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fit, minmax(min(100%, 240px), 1fr))', gap: '1rem' }}>
         <div>
           <div style={{ fontWeight: 700, color: '#065F46', fontSize: '0.875rem', marginBottom: '0.75rem' }}>💪 Strengths</div>
-          {match.strengths.map((s, i) => (
+          {match.strengths?.map((s, i) => (
             <div key={i} style={{ display: 'flex', gap: '0.5rem', alignItems: 'flex-start', marginBottom: '0.5rem' }}>
               <span style={{ color: '#10B981', flexShrink: 0, marginTop: '2px' }}>✓</span>
-              <span style={{ fontSize: '0.875rem', color: '#374151' }}>{s}</span>
+              <span style={{ fontSize: '0.875rem', color: '#374151', lineHeight: 1.5 }}>{s}</span>
             </div>
           ))}
         </div>
         <div>
           <div style={{ fontWeight: 700, color: '#991B1B', fontSize: '0.875rem', marginBottom: '0.75rem' }}>⚠️ Gaps</div>
-          {match.weaknesses.map((w, i) => (
+          {match.weaknesses?.map((w, i) => (
             <div key={i} style={{ display: 'flex', gap: '0.5rem', alignItems: 'flex-start', marginBottom: '0.5rem' }}>
               <span style={{ color: '#EF4444', flexShrink: 0, marginTop: '2px' }}>✗</span>
-              <span style={{ fontSize: '0.875rem', color: '#374151' }}>{w}</span>
+              <span style={{ fontSize: '0.875rem', color: '#374151', lineHeight: 1.5 }}>{w}</span>
             </div>
           ))}
         </div>
@@ -325,22 +326,22 @@ function SuggestionsPanel({ suggestions }) {
   ]
 
   return (
-    <div className="card-flat" style={{ padding: '1.75rem' }}>
+    <div className="card-flat" style={{ padding: '1.5rem', width: '100%' }}>
       <h3 style={{ fontWeight: 800, fontSize: '1.125rem', marginBottom: '1.5rem', color: '#1F2937' }}>
         ✨ AI Resume Improvement Suggestions
       </h3>
-      <div style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fit, minmax(280px, 1fr))', gap: '1.25rem' }}>
+      <div style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fit, minmax(min(100%, 250px), 1fr))', gap: '1.25rem' }}>
         {groups.map(g => {
-          const items = suggestions[g.key] || []
+          const items = suggestions?.[g.key] || []
           if (!items.length) return null
           return (
-            <div key={g.key} style={{ background: '#F8FAFF', borderRadius: '0.875rem', padding: '1.25rem', border: '1px solid #EFF6FF' }}>
+            <div key={g.key} style={{ background: '#F8FAFF', borderRadius: '0.875rem', padding: '1.25rem', border: '1px solid #EFF6FF', overflow: 'hidden' }}>
               <div style={{ fontWeight: 700, fontSize: '0.9375rem', color: g.color, marginBottom: '0.75rem' }}>
                 {g.icon} {g.title}
               </div>
               <ul style={{ margin: 0, padding: '0 0 0 1rem', display: 'flex', flexDirection: 'column', gap: '0.375rem' }}>
                 {items.slice(0, 5).map((item, i) => (
-                  <li key={i} style={{ fontSize: '0.875rem', color: '#374151', lineHeight: 1.5 }}>{item}</li>
+                  <li key={i} style={{ fontSize: '0.875rem', color: '#374151', lineHeight: 1.5, overflowWrap: 'break-word' }}>{item}</li>
                 ))}
               </ul>
             </div>
@@ -355,46 +356,46 @@ function LoadingAnalysisCard() {
   const [activeStep, setActiveStep] = useState(0)
   const steps = [
     { title: 'Extracting Resume & Job Data', sub: 'Parsing skills, contact info, and experience...' },
-    { title: 'Scoring ATS & Semantic Match', sub: 'Comparing TF-IDF & Sentence Transformer vectors...' },
+    { title: 'Scoring ATS & Semantic Match', sub: 'Comparing TF-IDF vectors and keyword density...' },
     { title: 'Generating AI Suggestions', sub: 'Crafting personalized rewrites & certification paths...' },
   ]
 
   useEffect(() => {
-    const timer1 = setTimeout(() => setActiveStep(1), 1000)
-    const timer2 = setTimeout(() => setActiveStep(2), 2200)
+    const timer1 = setTimeout(() => setActiveStep(1), 800)
+    const timer2 = setTimeout(() => setActiveStep(2), 1600)
     return () => { clearTimeout(timer1); clearTimeout(timer2) }
   }, [])
 
   return (
-    <div className="card" style={{ padding: '3.5rem 2rem', textAlign: 'center', maxWidth: 640, margin: '0 auto' }}>
-      <div className="spinner" style={{ margin: '0 auto 1.5rem', width: 48, height: 48, borderWidth: 3, borderColor: '#3B82F6', borderTopColor: 'transparent' }} />
-      <h3 style={{ fontWeight: 800, fontSize: '1.35rem', marginBottom: '0.5rem', color: '#0F172A' }}>
+    <div className="card" style={{ padding: 'clamp(1.5rem, 5vw, 2.5rem) clamp(1rem, 3vw, 1.5rem)', textAlign: 'center', maxWidth: 640, margin: '0 auto', width: '100%' }}>
+      <div className="spinner" style={{ margin: '0 auto 1.5rem', width: 44, height: 44, borderWidth: 3, borderColor: '#3B82F6', borderTopColor: 'transparent' }} />
+      <h3 style={{ fontWeight: 800, fontSize: '1.25rem', marginBottom: '0.5rem', color: '#0F172A' }}>
         Analyzing Your Resume with AI...
       </h3>
-      <p style={{ color: '#6B7280', fontSize: '0.95rem', marginBottom: '2rem' }}>
+      <p style={{ color: '#6B7280', fontSize: '0.9rem', marginBottom: '1.75rem' }}>
         Please wait a moment while our algorithms evaluate your profile.
       </p>
 
       {/* Progress Steps */}
-      <div style={{ display: 'flex', flexDirection: 'column', gap: '0.875rem', textAlign: 'left', background: '#F8FAFC', padding: '1.25rem 1.5rem', borderRadius: '0.875rem', border: '1px solid #E2E8F0' }}>
+      <div style={{ display: 'flex', flexDirection: 'column', gap: '0.75rem', textAlign: 'left', background: '#F8FAFC', padding: '1rem 1.25rem', borderRadius: '0.875rem', border: '1px solid #E2E8F0', width: '100%' }}>
         {steps.map((step, idx) => {
           const isDone = activeStep > idx
           const isCurrent = activeStep === idx
           return (
-            <div key={idx} style={{ display: 'flex', alignItems: 'center', gap: '0.875rem', opacity: activeStep >= idx ? 1 : 0.4, transition: 'all 0.3s' }}>
+            <div key={idx} style={{ display: 'flex', alignItems: 'center', gap: '0.75rem', opacity: activeStep >= idx ? 1 : 0.4, transition: 'all 0.3s' }}>
               <div style={{
-                width: 28, height: 28, borderRadius: '50%',
+                width: 26, height: 26, borderRadius: '50%',
                 background: isDone ? '#10B981' : isCurrent ? '#3B82F6' : '#CBD5E1',
                 color: 'white', display: 'flex', alignItems: 'center', justifyContent: 'center',
-                fontWeight: 700, fontSize: '0.8125rem', flexShrink: 0
+                fontWeight: 700, fontSize: '0.75rem', flexShrink: 0
               }}>
                 {isDone ? '✓' : idx + 1}
               </div>
-              <div>
-                <div style={{ fontWeight: 700, fontSize: '0.9375rem', color: isCurrent ? '#1E40AF' : '#1F2937' }}>
+              <div style={{ minWidth: 0, flex: 1 }}>
+                <div style={{ fontWeight: 700, fontSize: '0.875rem', color: isCurrent ? '#1E40AF' : '#1F2937' }}>
                   {step.title}
                 </div>
-                <div style={{ fontSize: '0.7875rem', color: '#6B7280' }}>
+                <div style={{ fontSize: '0.75rem', color: '#6B7280' }}>
                   {step.sub}
                 </div>
               </div>
@@ -457,7 +458,7 @@ export default function ResumeAnalyzerPage() {
   const handleDownload = async (type) => {
     setDownloading(true)
     try {
-      await downloadReport(analysis.id, type)
+      await downloadReport(analysis?.id || 1, type)
       toast.success(`${type.toUpperCase()} report downloaded!`)
     } catch (e) {
       toast.error('Download failed: ' + e.message)
@@ -479,14 +480,14 @@ export default function ResumeAnalyzerPage() {
           <h1 style={{ fontSize: 'clamp(1.75rem, 4vw, 2.5rem)', fontWeight: 900, color: '#1F2937', marginBottom: '0.5rem' }}>
             AI Resume & ATS Analyzer
           </h1>
-          <p style={{ color: '#6B7280', fontSize: '1.0625rem' }}>
+          <p style={{ color: '#6B7280', fontSize: '1.0625rem', lineHeight: 1.6 }}>
             Upload your resume, add a job description, and get a comprehensive AI-powered analysis in seconds.
           </p>
         </div>
 
         {/* Step 0: Upload Resume */}
         {step === 0 && (
-          <div className="card" style={{ padding: '2rem' }}>
+          <div className="card" style={{ padding: 'clamp(1.25rem, 4vw, 2rem)' }}>
             <h2 style={{ fontSize: '1.25rem', fontWeight: 800, marginBottom: '0.5rem' }}>📤 Step 1: Upload Your Resume</h2>
             <p style={{ color: '#6B7280', marginBottom: '1.5rem' }}>Upload a PDF or DOCX file. We'll extract all your details automatically.</p>
             <ResumeDropzone onUploaded={handleResumeUploaded} />
@@ -497,8 +498,8 @@ export default function ResumeAnalyzerPage() {
         {step === 1 && (
           <div>
             {error && <ErrorAlert message={error} onDismiss={() => setError('')} style={{ marginBottom: '1.5rem' }} />}
-            <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: '1.5rem' }}>
-              <div className="card" style={{ padding: '2rem' }}>
+            <div className="grid-responsive-2">
+              <div className="card" style={{ padding: '1.5rem' }}>
                 <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: '1rem' }}>
                   <h2 style={{ fontSize: '1.125rem', fontWeight: 800 }}>✅ Resume Uploaded</h2>
                   <button onClick={() => { setStep(0); setResume(null) }} style={{ background: 'none', border: 'none', cursor: 'pointer', color: '#EF4444', fontWeight: 600, fontSize: '0.875rem' }}>
@@ -507,7 +508,7 @@ export default function ResumeAnalyzerPage() {
                 </div>
                 <ResumePreview resume={resume} />
               </div>
-              <div className="card" style={{ padding: '2rem' }}>
+              <div className="card" style={{ padding: '1.5rem' }}>
                 <h2 style={{ fontSize: '1.125rem', fontWeight: 800, marginBottom: '0.5rem' }}>📋 Step 2: Job Description</h2>
                 <p style={{ color: '#6B7280', fontSize: '0.9rem', marginBottom: '1.25rem' }}>Paste the JD text or provide a job URL.</p>
                 <JDInputPanel onSubmitted={handleJDSubmitted} />
@@ -524,29 +525,29 @@ export default function ResumeAnalyzerPage() {
             ) : error ? (
               <div>
                 <ErrorAlert message={error} />
-                <button className="btn btn-primary" style={{ marginTop: '1rem' }} onClick={handleReset}>Start Over</button>
+                <button className="btn btn-primary" style={{ marginTop: '1rem', minHeight: '44px' }} onClick={handleReset}>Start Over</button>
               </div>
             ) : analysis ? (
               <div style={{ display: 'flex', flexDirection: 'column', gap: '1.5rem' }}>
                 {/* Toolbar */}
-                <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', flexWrap: 'wrap', gap: '0.75rem' }}>
+                <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', flexWrap: 'wrap', gap: '0.875rem' }}>
                   <h2 style={{ fontSize: '1.25rem', fontWeight: 800, color: '#1F2937', margin: 0 }}>📊 Analysis Results</h2>
-                  <div style={{ display: 'flex', gap: '0.75rem', flexWrap: 'wrap' }}>
-                    <button className="btn btn-outline btn-sm" onClick={handleReset}>
+                  <div style={{ display: 'flex', gap: '0.5rem', flexWrap: 'wrap', width: 'auto' }}>
+                    <button className="btn btn-outline btn-sm" onClick={handleReset} style={{ minHeight: '38px' }}>
                       <RefreshCw size={14} /> New Analysis
                     </button>
-                    <button className="btn btn-primary btn-sm" onClick={() => handleDownload('pdf')} disabled={downloading}>
+                    <button className="btn btn-primary btn-sm" onClick={() => handleDownload('pdf')} disabled={downloading} style={{ minHeight: '38px' }}>
                       <Download size={14} /> PDF Report
                     </button>
-                    <button className="btn btn-accent btn-sm" onClick={() => handleDownload('excel')} disabled={downloading}>
+                    <button className="btn btn-accent btn-sm" onClick={() => handleDownload('excel')} disabled={downloading} style={{ minHeight: '38px' }}>
                       <Download size={14} /> Excel Report
                     </button>
                   </div>
                 </div>
                 {/* Score Overview */}
-                <div className="card-flat" style={{ padding: '1.75rem', display: 'flex', gap: '2rem', justifyContent: 'center', flexWrap: 'wrap' }}>
-                  <ScoreRing score={analysis.ats_score.overall_ats_score} label="ATS Score" size={130} />
-                  <ScoreRing score={analysis.match_score.match_score} label="Match Score" size={130} />
+                <div className="card-flat" style={{ padding: '1.5rem', display: 'flex', gap: '1.5rem', justifyContent: 'center', flexWrap: 'wrap', alignItems: 'center' }}>
+                  <ScoreRing score={analysis.ats_score.overall_ats_score} label="ATS Score" size={120} />
+                  <ScoreRing score={analysis.match_score.match_score} label="Match Score" size={120} />
                   <div style={{ display: 'flex', flexDirection: 'column', alignItems: 'center', justifyContent: 'center', gap: '0.5rem' }}>
                     <MatchBadge category={analysis.match_score.match_category} />
                     <div style={{ fontSize: '0.875rem', color: '#6B7280' }}>Analysis ID: #{analysis.id}</div>

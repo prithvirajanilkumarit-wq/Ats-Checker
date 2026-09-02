@@ -352,27 +352,29 @@ DATABASE_URL=postgresql+asyncpg://user:password@localhost:5432/ats_db`
   return (
     <div className="section">
       <div className="container" style={{ maxWidth: 1100 }}>
-        <div style={{ display: 'grid', gridTemplateColumns: '220px 1fr', gap: '2rem', alignItems: 'start' }}>
+        <div style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fit, minmax(min(100%, 220px), 1fr))', gap: '2rem', alignItems: 'start' }}>
           {/* Sidebar */}
-          <div style={{ position: 'sticky', top: 80 }}>
+          <div style={{ position: 'sticky', top: 80, zIndex: 10 }}>
             <div className="card-flat" style={{ padding: '1.25rem' }}>
-              <h3 style={{ fontWeight: 800, fontSize: '0.9375rem', color: '#1F2937', marginBottom: '1rem' }}>📖 Contents</h3>
-              {[
-                ['#overview', 'Overview'],
-                ['#folder', 'Folder Structure'],
-                ['#backend-setup', 'Backend Setup'],
-                ['#frontend-setup', 'Frontend Setup'],
-                ['#env', 'Environment Variables'],
-                ['#api', 'API Reference'],
-                ['#database', 'Database'],
-                ['#deployment', 'Deployment'],
-                ['#future', 'Future Scope'],
-              ].map(([href, label]) => <SidebarLink key={href} href={href} label={label} />)}
+              <h3 style={{ fontWeight: 800, fontSize: '0.9375rem', color: '#1F2937', marginBottom: '0.75rem' }}>📖 Contents</h3>
+              <div style={{ display: 'flex', flexDirection: 'column', gap: '0.25rem' }}>
+                {[
+                  ['#overview', 'Overview'],
+                  ['#folder', 'Folder Structure'],
+                  ['#backend-setup', 'Backend Setup'],
+                  ['#frontend-setup', 'Frontend Setup'],
+                  ['#env', 'Environment Variables'],
+                  ['#api', 'API Reference'],
+                  ['#database', 'Database'],
+                  ['#deployment', 'Deployment'],
+                  ['#future', 'Future Scope'],
+                ].map(([href, label]) => <SidebarLink key={href} href={href} label={label} />)}
+              </div>
             </div>
           </div>
 
           {/* Main Content */}
-          <div>
+          <div style={{ minWidth: 0 }}>
             {/* Title */}
             <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'flex-start', flexWrap: 'wrap', gap: '1rem', marginBottom: '2.5rem' }}>
               <div>
@@ -385,7 +387,7 @@ DATABASE_URL=postgresql+asyncpg://user:password@localhost:5432/ats_db`
               <button
                 onClick={handleLock}
                 className="btn btn-outline btn-sm"
-                style={{ display: 'flex', alignItems: 'center', gap: '0.375rem', borderColor: '#CBD5E1', color: '#475569', borderRadius: '0.5rem' }}
+                style={{ display: 'flex', alignItems: 'center', gap: '0.375rem', borderColor: '#CBD5E1', color: '#475569', borderRadius: '0.5rem', minHeight: '38px' }}
                 title="Lock documentation section"
               >
                 <Lock size={14} /> Lock Section
@@ -421,7 +423,7 @@ DATABASE_URL=postgresql+asyncpg://user:password@localhost:5432/ats_db`
 
             <Section id="api" icon="🔌" title="Running the Backend">
               <CodeBlock code={runBackend} lang="bash" />
-              <p style={{ color: '#374151', marginTop: '0.75rem' }}>Visit <a href="http://localhost:8000/api/docs" target="_blank" style={{ color: '#1E40AF', fontWeight: 600 }}>http://localhost:8000/api/docs</a> for the interactive Swagger UI.</p>
+              <p style={{ color: '#374151', marginTop: '0.75rem' }}>Visit <a href="http://localhost:8000/api/docs" target="_blank" rel="noreferrer" style={{ color: '#1E40AF', fontWeight: 600 }}>http://localhost:8000/api/docs</a> for the interactive Swagger UI.</p>
               <h3 style={{ fontWeight: 700, fontSize: '1.0625rem', marginTop: '1.5rem', marginBottom: '0.75rem', color: '#1F2937' }}>API Endpoints</h3>
               <CodeBlock code={apiEndpoints} lang="REST API" />
             </Section>
@@ -431,7 +433,7 @@ DATABASE_URL=postgresql+asyncpg://user:password@localhost:5432/ats_db`
             </Section>
 
             <Section id="deployment" icon="🚀" title="Deployment">
-              <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: '1rem' }}>
+              <div className="grid-responsive-2">
                 {[
                   { title: 'Backend (Render/Railway)', steps: ['Push to GitHub', 'Connect repo to Render', 'Set environment variables', 'Set start command: uvicorn backend.main:app --host 0.0.0.0 --port $PORT'] },
                   { title: 'Frontend (Vercel/Netlify)', steps: ['Push frontend/ to GitHub', 'Connect to Vercel', 'Set VITE_API_URL env var', 'Deploy — auto-builds on push'] },
@@ -449,7 +451,7 @@ DATABASE_URL=postgresql+asyncpg://user:password@localhost:5432/ats_db`
             </Section>
 
             <Section id="future" icon="🔮" title="Future Scope">
-              <div style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fill, minmax(240px, 1fr))', gap: '0.75rem' }}>
+              <div style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fit, minmax(min(100%, 220px), 1fr))', gap: '0.75rem' }}>
                 {futureScope.map((item, i) => (
                   <div key={i} style={{ display: 'flex', gap: '0.5rem', alignItems: 'flex-start', padding: '0.875rem', background: '#F0FDF4', borderRadius: '0.75rem', border: '1px solid #BBF7D0' }}>
                     <span style={{ color: '#10B981', flexShrink: 0 }}>→</span>
@@ -464,3 +466,4 @@ DATABASE_URL=postgresql+asyncpg://user:password@localhost:5432/ats_db`
     </div>
   )
 }
+

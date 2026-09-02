@@ -48,20 +48,20 @@ export default function AboutPage() {
     <div className="section">
       <div className="container" style={{ maxWidth: 900 }}>
         {/* Hero */}
-        <div style={{ textAlign: 'center', marginBottom: '3rem', padding: '3rem', background: 'linear-gradient(135deg, #EFF6FF, #FFF8E7)', borderRadius: '1.5rem' }}>
+        <div style={{ textAlign: 'center', marginBottom: '2.5rem', padding: 'clamp(1.5rem, 5vw, 3rem)', background: 'linear-gradient(135deg, #EFF6FF, #FFF8E7)', borderRadius: '1.25rem' }}>
           <span className="tag tag-blue" style={{ marginBottom: '1rem', display: 'inline-flex' }}>MCA Final Year Project</span>
-          <h1 style={{ fontSize: 'clamp(1.75rem, 4vw, 2.75rem)', fontWeight: 900, marginBottom: '1rem', color: '#1F2937' }}>
+          <h1 style={{ fontSize: 'clamp(1.6rem, 4vw, 2.5rem)', fontWeight: 900, marginBottom: '0.75rem', color: '#1F2937' }}>
             AI Resume & Job Match Analyzer
           </h1>
-          <p style={{ fontSize: '1.125rem', color: '#4B5563', maxWidth: 600, margin: '0 auto', lineHeight: 1.7 }}>
+          <p style={{ fontSize: 'clamp(0.95rem, 2.5vw, 1.125rem)', color: '#4B5563', maxWidth: 600, margin: '0 auto', lineHeight: 1.65 }}>
             A production-quality data analytics project demonstrating real-world applications of Machine Learning, NLP, REST APIs, and Data Visualization.
           </p>
         </div>
 
         {/* Problem Statement */}
-        <div className="card-flat" style={{ padding: '2rem', marginBottom: '1.5rem' }}>
-          <h2 style={{ fontSize: '1.375rem', fontWeight: 800, color: '#1E40AF', marginBottom: '1rem' }}>🎯 Problem Statement</h2>
-          <p style={{ color: '#374151', lineHeight: 1.8 }}>
+        <div className="card-flat" style={{ padding: '1.5rem', marginBottom: '1.5rem' }}>
+          <h2 style={{ fontSize: '1.25rem', fontWeight: 800, color: '#1E40AF', marginBottom: '0.75rem' }}>🎯 Problem Statement</h2>
+          <p style={{ color: '#374151', lineHeight: 1.7, fontSize: '0.9375rem', margin: 0 }}>
             Job seekers often submit resumes without understanding how Applicant Tracking Systems (ATS) filter them. 
             Many qualified candidates are rejected before a human ever reads their resume — simply because of poor keyword alignment, 
             formatting issues, or missing skills. Additionally, candidates lack structured tools to research companies before applying, 
@@ -70,12 +70,12 @@ export default function AboutPage() {
         </div>
 
         {/* Solution */}
-        <div className="card-flat" style={{ padding: '2rem', marginBottom: '1.5rem' }}>
-          <h2 style={{ fontSize: '1.375rem', fontWeight: 800, color: '#10B981', marginBottom: '1rem' }}>💡 Solution</h2>
-          <p style={{ color: '#374151', lineHeight: 1.8, marginBottom: '1rem' }}>
+        <div className="card-flat" style={{ padding: '1.5rem', marginBottom: '1.5rem' }}>
+          <h2 style={{ fontSize: '1.25rem', fontWeight: 800, color: '#10B981', marginBottom: '0.75rem' }}>💡 Solution</h2>
+          <p style={{ color: '#374151', lineHeight: 1.7, marginBottom: '1rem', fontSize: '0.9375rem' }}>
             This application provides an end-to-end AI-powered job search assistant that:
           </p>
-          <div style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fit, minmax(240px, 1fr))', gap: '0.75rem' }}>
+          <div style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fit, minmax(min(100%, 220px), 1fr))', gap: '0.75rem' }}>
             {[
               '📤 Parses and extracts structured data from PDF/DOCX resumes',
               '🎯 Calculates multi-dimensional ATS scores with explanations',
@@ -84,7 +84,7 @@ export default function AboutPage() {
               '🏢 Researches companies with source-cited analysis',
               '📊 Visualizes all data in an interactive dashboard',
             ].map((item, i) => (
-              <div key={i} style={{ background: '#F8FAFF', padding: '0.875rem', borderRadius: '0.75rem', fontSize: '0.9rem', color: '#374151', lineHeight: 1.5 }}>
+              <div key={i} style={{ background: '#F8FAFF', padding: '0.875rem', borderRadius: '0.75rem', fontSize: '0.875rem', color: '#374151', lineHeight: 1.5 }}>
                 {item}
               </div>
             ))}
@@ -92,57 +92,57 @@ export default function AboutPage() {
         </div>
 
         {/* Data Analytics Skills */}
-        <div className="card-flat" style={{ padding: '2rem', marginBottom: '1.5rem' }}>
-          <h2 style={{ fontSize: '1.375rem', fontWeight: 800, color: '#8B5CF6', marginBottom: '1rem' }}>📚 Data Analytics Competencies Demonstrated</h2>
-          <div style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fit, minmax(180px, 1fr))', gap: '0.875rem' }}>
+        <div className="card-flat" style={{ padding: '1.5rem', marginBottom: '1.5rem' }}>
+          <h2 style={{ fontSize: '1.25rem', fontWeight: 800, color: '#8B5CF6', marginBottom: '1rem' }}>📚 Data Analytics Competencies Demonstrated</h2>
+          <div style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fit, minmax(min(100%, 160px), 1fr))', gap: '0.75rem' }}>
             {[
               { skill: 'Python', desc: 'Primary backend language' },
               { skill: 'Pandas & NumPy', desc: 'Data processing and computation' },
               { skill: 'SQL (SQLite)', desc: 'Structured data storage and queries' },
-              { skill: 'Machine Learning', desc: 'scikit-learn, TF-IDF, cosine similarity' },
+              { skill: 'Machine Learning', desc: 'TF-IDF, cosine similarity matching' },
               { skill: 'NLP', desc: 'spaCy, Sentence Transformers, text mining' },
-              { skill: 'REST APIs', desc: 'FastAPI with full CRUD operations' },
+              { skill: 'REST APIs', desc: 'FastAPI with full async routes' },
               { skill: 'Data Visualization', desc: 'Recharts: radar, bar, pie, progress' },
               { skill: 'Excel Reports', desc: 'openpyxl automated report generation' },
-              { skill: 'Power BI Ready', desc: 'SQLite DB exportable to Power BI' },
-              { skill: 'OpenAI/GPT-4', desc: 'LLM integration for AI suggestions' },
+              { skill: 'Power BI Ready', desc: 'Database exportable to Power BI' },
+              { skill: 'OpenAI / Gemini', desc: 'LLM integration for suggestions' },
             ].map((item, i) => (
-              <div key={i} style={{ padding: '0.875rem', background: '#F5F3FF', borderRadius: '0.75rem', border: '1px solid #EDE9FE' }}>
-                <div style={{ fontWeight: 700, color: '#6D28D9', fontSize: '0.9rem', marginBottom: '0.25rem' }}>{item.skill}</div>
-                <div style={{ color: '#6B7280', fontSize: '0.8125rem' }}>{item.desc}</div>
+              <div key={i} style={{ padding: '0.75rem', background: '#F5F3FF', borderRadius: '0.75rem', border: '1px solid #EDE9FE' }}>
+                <div style={{ fontWeight: 700, color: '#6D28D9', fontSize: '0.875rem', marginBottom: '0.25rem' }}>{item.skill}</div>
+                <div style={{ color: '#6B7280', fontSize: '0.75rem' }}>{item.desc}</div>
               </div>
             ))}
           </div>
         </div>
 
         {/* How Scores Work */}
-        <div className="card-flat" style={{ padding: '2rem', marginBottom: '1.5rem' }}>
-          <h2 style={{ fontSize: '1.375rem', fontWeight: 800, color: '#F59E0B', marginBottom: '1.25rem' }}>📐 How Scoring Works</h2>
-          <div style={{ display: 'flex', flexDirection: 'column', gap: '1rem' }}>
+        <div className="card-flat" style={{ padding: '1.5rem', marginBottom: '1.5rem' }}>
+          <h2 style={{ fontSize: '1.25rem', fontWeight: 800, color: '#F59E0B', marginBottom: '1rem' }}>📐 How Scoring Works</h2>
+          <div style={{ display: 'flex', flexDirection: 'column', gap: '0.75rem' }}>
             {metrics.map(m => (
-              <div key={m.name} style={{ background: '#FFFBEB', padding: '1.125rem', borderRadius: '0.875rem', border: '1px solid #FDE68A' }}>
-                <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: '0.375rem' }}>
-                  <span style={{ fontWeight: 800, color: '#92400E' }}>{m.name}</span>
+              <div key={m.name} style={{ background: '#FFFBEB', padding: '1rem', borderRadius: '0.75rem', border: '1px solid #FDE68A' }}>
+                <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: '0.375rem', flexWrap: 'wrap', gap: '0.5rem' }}>
+                  <span style={{ fontWeight: 800, color: '#92400E', fontSize: '0.9375rem' }}>{m.name}</span>
                   <span className="tag tag-yellow" style={{ fontSize: '0.75rem' }}>Range: {m.range}</span>
                 </div>
-                <p style={{ color: '#4B5563', fontSize: '0.9rem', lineHeight: 1.6, margin: 0 }}>{m.calc}</p>
+                <p style={{ color: '#4B5563', fontSize: '0.875rem', lineHeight: 1.55, margin: 0 }}>{m.calc}</p>
               </div>
             ))}
           </div>
         </div>
 
         {/* Tech Stack Grid */}
-        <h2 style={{ fontSize: '1.375rem', fontWeight: 800, color: '#1F2937', marginBottom: '1.25rem' }}>🛠️ Technology Stack</h2>
+        <h2 style={{ fontSize: '1.25rem', fontWeight: 800, color: '#1F2937', marginBottom: '1rem' }}>🛠️ Technology Stack</h2>
         {Object.entries(techStack).map(([category, items]) => (
-          <div key={category} className="card-flat" style={{ padding: '1.75rem', marginBottom: '1.25rem' }}>
-            <h3 style={{ fontWeight: 700, color: '#1E40AF', marginBottom: '1rem', fontSize: '1.0625rem' }}>{category}</h3>
-            <div style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fill, minmax(200px, 1fr))', gap: '0.75rem' }}>
+          <div key={category} className="card-flat" style={{ padding: '1.5rem', marginBottom: '1.25rem' }}>
+            <h3 style={{ fontWeight: 700, color: '#1E40AF', marginBottom: '0.875rem', fontSize: '1rem' }}>{category}</h3>
+            <div style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fit, minmax(min(100%, 180px), 1fr))', gap: '0.75rem' }}>
               {items.map(item => (
-                <div key={item.name} style={{ display: 'flex', gap: '0.625rem', alignItems: 'flex-start' }}>
-                  <span style={{ fontSize: '1.25rem', flexShrink: 0 }}>{item.icon}</span>
+                <div key={item.name} style={{ display: 'flex', gap: '0.5rem', alignItems: 'flex-start' }}>
+                  <span style={{ fontSize: '1.125rem', flexShrink: 0 }}>{item.icon}</span>
                   <div>
-                    <div style={{ fontWeight: 700, fontSize: '0.9rem', color: '#1F2937' }}>{item.name}</div>
-                    <div style={{ fontSize: '0.8rem', color: '#6B7280' }}>{item.desc}</div>
+                    <div style={{ fontWeight: 700, fontSize: '0.875rem', color: '#1F2937' }}>{item.name}</div>
+                    <div style={{ fontSize: '0.75rem', color: '#6B7280' }}>{item.desc}</div>
                   </div>
                 </div>
               ))}
@@ -151,10 +151,10 @@ export default function AboutPage() {
         ))}
 
         {/* Architecture Diagram */}
-        <div className="card-flat" style={{ padding: '2rem' }}>
-          <h2 style={{ fontSize: '1.375rem', fontWeight: 800, color: '#1F2937', marginBottom: '1.25rem' }}>🏗️ System Architecture</h2>
-          <div style={{ background: '#0F172A', borderRadius: '0.875rem', padding: '1.5rem', overflowX: 'auto' }}>
-            <pre style={{ color: '#E2E8F0', fontFamily: 'monospace', fontSize: '0.8rem', lineHeight: 1.6, margin: 0 }}>{`
+        <div className="card-flat" style={{ padding: '1.5rem' }}>
+          <h2 style={{ fontSize: '1.25rem', fontWeight: 800, color: '#1F2937', marginBottom: '1rem' }}>🏗️ System Architecture</h2>
+          <div style={{ background: '#0F172A', borderRadius: '0.75rem', padding: '1rem', overflowX: 'auto', WebkitOverflowScrolling: 'touch' }}>
+            <pre style={{ color: '#E2E8F0', fontFamily: 'monospace', fontSize: 'clamp(0.6rem, 1.8vw, 0.75rem)', lineHeight: 1.5, margin: 0 }}>{`
 ┌──────────────────────────────────────────────────────────────┐
 │                     FRONTEND (React + Vite)                   │
 │  ┌──────────┐ ┌───────────┐ ┌─────────┐ ┌───────────────┐  │
@@ -181,7 +181,7 @@ export default function AboutPage() {
 │  │  MatchScorer    │  │   - Soft Skills (5%)          │     │
 │  │  (SentenceT +   │  └───────────────────────────────┘     │
 │  │   TF-IDF)       │  ┌───────────────────────────────┐     │
-│  └─────────────────┘  │   AI Suggestions (OpenAI)     │     │
+│  └─────────────────┘  │   AI Suggestions              │     │
 │  ┌─────────────────┐  │   + Rule-based Fallback       │     │
 │  │ CompanyAnalyzer │  └───────────────────────────────┘     │
 │  │ (OpenAI + Rules)│  ┌───────────────────────────────┐     │
@@ -202,3 +202,4 @@ export default function AboutPage() {
     </div>
   )
 }
+
