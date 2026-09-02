@@ -1,3 +1,4 @@
+import { useEffect } from 'react'
 import { BrowserRouter, Routes, Route } from 'react-router-dom'
 import { Toaster } from 'react-hot-toast'
 import Navbar from './components/Navbar'
@@ -8,8 +9,14 @@ import CompanyAnalyzerPage from './pages/CompanyAnalyzerPage'
 import DashboardPage from './pages/DashboardPage'
 import AboutPage from './pages/AboutPage'
 import DocumentationPage from './pages/DocumentationPage'
+import { healthCheck } from './api/api'
 
 export default function App() {
+  // Trigger proactive server wake-up ping on application load
+  useEffect(() => {
+    healthCheck().catch(() => {})
+  }, [])
+
   return (
     <BrowserRouter>
       <Navbar />
