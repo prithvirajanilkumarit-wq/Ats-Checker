@@ -18,25 +18,27 @@ def calculate_match_score(
 ) -> Dict[str, Any]:
     """
     Calculate Resume Match Score using:
-      - High-speed TF-IDF Cosine Similarity (ultra-lightweight memory footprint)
-      - ATS component scores (weighted)
-      - Skills overlap & gap analysis
+      - High-speed TF-IDF Cosine Similarity
+      - Overall ATS Score (authoritative 60% structured component)
+      - Dynamic Short-JD length guard
     """
-    # 1. Semantic TF-IDF similarity
+    # 1. Semantic TF-IDF similarity (0 - 100)
     semantic_score = _semantic_similarity(resume_text, jd_text)
 
-    # 2. Weighted score from ATS components
-    ats_weighted = (
-        ats_data.get("skills_match_score", 0) * 0.30 +
-        ats_data.get("experience_match_score", 0) * 0.25 +
-        ats_data.get("keyword_match_score", 0) * 0.20 +
-        ats_data.get("education_match_score", 0) * 0.10 +
-        ats_data.get("soft_skills_score", 0) * 0.10 +
-        ats_data.get("formatting_score", 0) * 0.05
-    )
+    # 2. Authoritative Overall ATS Score
+    overall_ats_score = ats_data.get("overall_ats_score", 0.0)
 
-    # 3. Combine
-    final_score = (semantic_score * 0.40 + ats_weighted * 0.60)
+    # 3. Dynamic Short-JD Guard:
+    # When a JD has fewer than 25 words (e.g. short query/title), blend semantic weight
+    # to avoid artificially depressing the match score due to low natural-language density.
+    jd_word_count = len(re.findall(r'\b[a-zA-Z]{2,}\b', jd_text))
+    if 0 < jd_word_count < 25:
+        semantic_weight = 0.40 * max(0.25, jd_word_count / 25.0)
+    else:
+        semantic_weight = 0.40
+    ats_weight = 1.0 - semantic_weight
+
+    final_score = (semantic_score * semantic_weight) + (overall_ats_score * ats_weight)
     final_score = round(min(100.0, max(0.0, final_score)), 1)
 
     # 4. Category
@@ -51,6 +53,9 @@ def calculate_match_score(
         "match_reasons": reasons,
         "strengths": strengths,
         "weaknesses": weaknesses,
+        "semantic_similarity_score": round(semantic_score, 1),
+        "semantic_weight": round(semantic_weight, 2),
+        "ats_weight": round(ats_weight, 2),
     }
 
 

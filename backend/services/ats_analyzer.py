@@ -4,8 +4,7 @@ ATS Analyzer Service — calculates ATS score components
 from typing import Dict, Any, List, Tuple
 from backend.utils.nlp_utils import (
     extract_skills, extract_tech_skills, extract_soft_skills,
-    extract_keywords, check_resume_formatting, TECH_SKILLS, SOFT_SKILLS,
-    EDUCATION_KEYWORDS,
+    extract_keywords, check_resume_formatting,
 )
 from backend.utils.logger import get_logger
 import re
@@ -13,11 +12,21 @@ import re
 logger = get_logger(__name__)
 
 
+ATS_COMPONENT_WEIGHTS = {
+    "keyword": 0.30,
+    "skills": 0.25,
+    "experience": 0.20,
+    "education": 0.10,
+    "formatting": 0.10,
+    "soft_skills": 0.05,
+}
+
+
 def analyze_ats(resume_text: str, jd_text: str, resume_data: Dict[str, Any]) -> Dict[str, Any]:
     """
     Full ATS analysis pipeline.
 
-    Returns comprehensive ATS score breakdown.
+    Returns comprehensive ATS score breakdown with named component contributions.
     """
     logger.info("Starting ATS analysis...")
 
@@ -42,16 +51,41 @@ def analyze_ats(resume_text: str, jd_text: str, resume_data: Dict[str, Any]) -> 
     # 7. Formatting
     fmt_score, fmt_issues = check_resume_formatting(resume_text)
 
-    # 8. Overall ATS Score (weighted)
-    overall_ats = (
-        keyword_score * 0.30 +
-        skills_score * 0.25 +
-        exp_score * 0.20 +
-        edu_score * 0.10 +
-        fmt_score * 0.10 +
-        soft_score * 0.05
-    )
+    # 8. Named Components Breakdown & Authoritative Overall ATS Score
+    score_breakdown = {
+        "keyword": {
+            "raw_score": round(keyword_score, 1),
+            "weight": ATS_COMPONENT_WEIGHTS["keyword"],
+            "weighted_contribution": round(keyword_score * ATS_COMPONENT_WEIGHTS["keyword"], 2),
+        },
+        "skills": {
+            "raw_score": round(skills_score, 1),
+            "weight": ATS_COMPONENT_WEIGHTS["skills"],
+            "weighted_contribution": round(skills_score * ATS_COMPONENT_WEIGHTS["skills"], 2),
+        },
+        "experience": {
+            "raw_score": round(exp_score, 1),
+            "weight": ATS_COMPONENT_WEIGHTS["experience"],
+            "weighted_contribution": round(exp_score * ATS_COMPONENT_WEIGHTS["experience"], 2),
+        },
+        "education": {
+            "raw_score": round(edu_score, 1),
+            "weight": ATS_COMPONENT_WEIGHTS["education"],
+            "weighted_contribution": round(edu_score * ATS_COMPONENT_WEIGHTS["education"], 2),
+        },
+        "formatting": {
+            "raw_score": round(fmt_score, 1),
+            "weight": ATS_COMPONENT_WEIGHTS["formatting"],
+            "weighted_contribution": round(fmt_score * ATS_COMPONENT_WEIGHTS["formatting"], 2),
+        },
+        "soft_skills": {
+            "raw_score": round(soft_score, 1),
+            "weight": ATS_COMPONENT_WEIGHTS["soft_skills"],
+            "weighted_contribution": round(soft_score * ATS_COMPONENT_WEIGHTS["soft_skills"], 2),
+        },
+    }
 
+    overall_ats = sum(c["weighted_contribution"] for c in score_breakdown.values())
     overall_ats = round(min(100.0, max(0.0, overall_ats)), 1)
 
     result = {
@@ -68,6 +102,7 @@ def analyze_ats(resume_text: str, jd_text: str, resume_data: Dict[str, Any]) -> 
         "matched_skills": matched_skills[:20],
         "missing_skills": missing_skills[:20],
         "formatting_issues": fmt_issues,
+        "score_breakdown": score_breakdown,
     }
 
     logger.info(f"ATS Analysis complete. Overall: {overall_ats}")

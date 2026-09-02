@@ -170,9 +170,23 @@ def extract_skills(text: str) -> List[str]:
     # 4. Standard Technical Taxonomy
     for key, display_name, rx in _TAXONOMY_REGEXES:
         if rx.search(text_lower):
-            # If standard AWS D1.1 is in text, don't falsely add standalone cloud "AWS"
-            if key == "aws" and re.search(r'\baws\s+d1\b', text_lower):
-                continue
+            # Proximity-aware AWS check:
+            # If standard AWS D1.1 is in text, only suppress standalone 'AWS' if ALL occurrences of 'aws'
+            # in the resume are strictly attached to welding codes (e.g. AWS D1.1, AWS CWI, welding).
+            # If any occurrence is standalone or in cloud context, keep AWS Cloud skill.
+            if key == "aws":
+                all_aws = list(re.finditer(r'\baws\b', text_lower))
+                has_cloud_aws = False
+                for m in all_aws:
+                    start = max(0, m.start() - 35)
+                    end = min(len(text_lower), m.end() + 35)
+                    surrounding = text_lower[start:end]
+                    if not re.search(r'\baws\s+(?:d\d|cwi|sec|welding)\b', surrounding) and not re.search(r'\bwelding\s+aws\b', surrounding):
+                        has_cloud_aws = True
+                        break
+                if not has_cloud_aws:
+                    continue
+
             if key not in BLACKLIST_SKILLS:
                 skills_map[key] = display_name
 

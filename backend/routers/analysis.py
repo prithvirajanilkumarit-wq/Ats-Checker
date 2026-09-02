@@ -112,6 +112,7 @@ async def run_analysis(body: AnalysisRequest):
     analysis_rec.grammar_suggestions = suggestions_data["grammar_suggestions"]
     analysis_rec.keyword_suggestions = suggestions_data["keyword_suggestions"]
     analysis_rec.quantify_suggestions = suggestions_data["quantify_suggestions"]
+    analysis_rec.score_breakdown = ats_data.get("score_breakdown")
     analysis_rec.created_at = now
 
     MEMORY_STORE["analyses"][analysis_id] = analysis_rec
@@ -144,6 +145,7 @@ async def get_analysis(analysis_id: int, db: AsyncSession = Depends(get_db)):
         "missing_keywords": analysis.missing_keywords or [],
         "matched_skills": analysis.matched_skills or [],
         "missing_skills": analysis.missing_skills or [],
+        "score_breakdown": getattr(analysis, "score_breakdown", None),
     }
     match_data = {
         "match_score": analysis.match_score,
@@ -222,15 +224,17 @@ async def get_dashboard_data(analysis_id: int, db: AsyncSession = Depends(get_db
         "company_rating": None,
         "radar_data": radar_data,
         "bar_data": bar_data,
+        "score_breakdown": getattr(analysis, "score_breakdown", None),
     }
 
 
 @router.get("/", summary="List all analyses")
 async def list_analyses(db: AsyncSession = Depends(get_db)):
-    result = await db.execute(
-        select(ResumeAnalysis).order_by(ResumeAnalysis.created_at.desc()).limit(20)
-    )
-    analyses = result.scalars().all()
+    """List all previously saved resume analyses."""
+    analyses = list(MEMORY_STORE["analyses"].values())
+    if not analyses:
+        result = await db.execute(select(ResumeAnalysis).order_by(ResumeAnalysis.created_at.desc()))
+        analyses = result.scalars().all()
     return [
         {
             "id": a.id,
@@ -239,7 +243,7 @@ async def list_analyses(db: AsyncSession = Depends(get_db)):
             "ats_score": a.ats_score,
             "match_score": a.match_score,
             "match_category": a.match_category,
-            "created_at": a.created_at.isoformat(),
+            "created_at": a.created_at.isoformat() if hasattr(a.created_at, "isoformat") else str(a.created_at),
         }
         for a in analyses
     ]
@@ -271,6 +275,7 @@ def _build_response(analysis, ats_data, match_data, suggestions_data):
             "missing_keywords": ats_data["missing_keywords"],
             "matched_skills": ats_data["matched_skills"],
             "missing_skills": ats_data["missing_skills"],
+            "score_breakdown": ats_data.get("score_breakdown"),
         },
         "match_score": {
             "match_score": match_data["match_score"],
@@ -278,6 +283,9 @@ def _build_response(analysis, ats_data, match_data, suggestions_data):
             "match_reasons": match_data["match_reasons"],
             "strengths": match_data["strengths"],
             "weaknesses": match_data["weaknesses"],
+            "semantic_similarity_score": match_data.get("semantic_similarity_score"),
+            "semantic_weight": match_data.get("semantic_weight"),
+            "ats_weight": match_data.get("ats_weight"),
         },
         "suggestions": suggestions_data,
         "created_at": created_at_str,

@@ -161,7 +161,20 @@ export function extractSkills(text) {
   for (const [key, displayName] of Object.entries(TAXONOMY_DICTIONARY)) {
     const rx = new RegExp(`(?<![a-zA-Z0-9])${key.replace(/[.*+?^${}()|[\]\\]/g, '\\$&')}(?![a-zA-Z0-9])`, 'i')
     if (rx.test(textLower)) {
-      if (key === 'aws' && /\baws\s+d1\b/i.test(textLower)) continue
+      if (key === 'aws') {
+        const matches = [...textLower.matchAll(/\baws\b/g)]
+        let hasCloudAws = false
+        for (const match of matches) {
+          const start = Math.max(0, match.index - 35)
+          const end = Math.min(textLower.length, match.index + 35)
+          const surrounding = textLower.slice(start, end)
+          if (!/\baws\s+(?:d\d|cwi|sec|welding)\b/i.test(surrounding) && !/\bwelding\s+aws\b/i.test(surrounding)) {
+            hasCloudAws = true
+            break
+          }
+        }
+        if (!hasCloudAws) continue
+      }
       if (!BLACKLIST_SKILLS.has(key)) {
         skillsMap[key] = displayName
       }
@@ -425,29 +438,54 @@ export function computeClientAtsAnalysis(
   const fmtResult = checkResumeFormattingClient(rText)
   const formattingScore = fmtResult.score
 
-  // 8. Overall ATS Score (Backend Weighted Formula)
-  const overallAts = Math.round(
-    keywordScore * 0.30 +
-    skillsScore * 0.25 +
-    experienceScore * 0.20 +
-    educationScore * 0.10 +
-    formattingScore * 0.10 +
-    softSkillsScore * 0.05
-  )
-  const overallAtsScore = Math.min(100, Math.max(0, overallAts))
+  // 8. Named Components Breakdown & Authoritative Overall ATS Score
+  const score_breakdown = {
+    keyword: {
+      raw_score: Math.round(keywordScore * 10) / 10,
+      weight: 0.30,
+      weighted_contribution: Math.round(keywordScore * 0.30 * 100) / 100,
+    },
+    skills: {
+      raw_score: Math.round(skillsScore * 10) / 10,
+      weight: 0.25,
+      weighted_contribution: Math.round(skillsScore * 0.25 * 100) / 100,
+    },
+    experience: {
+      raw_score: Math.round(experienceScore * 10) / 10,
+      weight: 0.20,
+      weighted_contribution: Math.round(experienceScore * 0.20 * 100) / 100,
+    },
+    education: {
+      raw_score: Math.round(educationScore * 10) / 10,
+      weight: 0.10,
+      weighted_contribution: Math.round(educationScore * 0.10 * 100) / 100,
+    },
+    formatting: {
+      raw_score: Math.round(formattingScore * 10) / 10,
+      weight: 0.10,
+      weighted_contribution: Math.round(formattingScore * 0.10 * 100) / 100,
+    },
+    soft_skills: {
+      raw_score: Math.round(softSkillsScore * 10) / 10,
+      weight: 0.05,
+      weighted_contribution: Math.round(softSkillsScore * 0.05 * 100) / 100,
+    },
+  }
 
-  // 9. Semantic Cosine Similarity & Match Score
+  const overallAts = Object.values(score_breakdown).reduce((acc, c) => acc + c.weighted_contribution, 0)
+  const overallAtsScore = Math.min(100, Math.max(0, Math.round(overallAts * 10) / 10))
+
+  // 9. Semantic Cosine Similarity & Match Score (with Dynamic Short-JD Guard)
   const semanticScore = computeTfIdfCosine(rText, jText)
-  const atsWeighted = (
-    skillsScore * 0.30 +
-    experienceScore * 0.25 +
-    keywordScore * 0.20 +
-    educationScore * 0.10 +
-    softSkillsScore * 0.10 +
-    formattingScore * 0.05
-  )
-  const finalMatchScore = Math.round(semanticScore * 0.40 + atsWeighted * 0.60)
-  const matchScore = Math.min(100, Math.max(0, finalMatchScore))
+  const jdWordCount = (jText.match(/\b[a-zA-Z]{2,}\b/g) || []).length
+  let semanticWeight = 0.40
+  if (jdWordCount < 25 && jdWordCount > 0) {
+    semanticWeight = 0.40 * Math.max(0.25, jdWordCount / 25.0)
+  }
+  const atsWeight = 1.0 - semanticWeight
+
+  const finalMatchScore = Math.round((semanticScore * semanticWeight + overallAtsScore * atsWeight) * 10) / 10
+  const matchScore = Math.min(100, Math.max(0, Math.round(finalMatchScore)))
 
   // Category matching backend: Very High (>=80), High (>=60), Medium (>=40), Low (<40)
   let matchCategory = "Low Match"
@@ -579,6 +617,7 @@ export function computeClientAtsAnalysis(
       missing_keywords: missingKeywords.slice(0, 20),
       matched_skills: matchedSkills.slice(0, 20),
       missing_skills: missingSkills.slice(0, 20),
+      score_breakdown: score_breakdown,
     },
     match_score: {
       match_score: matchScore,
@@ -586,6 +625,9 @@ export function computeClientAtsAnalysis(
       match_reasons: matchReasons,
       strengths: strengths.length ? strengths : ["Candidate demonstrates solid foundational capabilities."],
       weaknesses: weaknesses.length ? weaknesses : ["Review job requirements to ensure all specialized tools are highlighted."],
+      semantic_similarity_score: Math.round(semanticScore * 10) / 10,
+      semantic_weight: Math.round(semanticWeight * 100) / 100,
+      ats_weight: Math.round(atsWeight * 100) / 100,
     },
     suggestions: {
       suggested_skills: suggestedSkills,

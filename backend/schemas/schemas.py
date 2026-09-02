@@ -96,6 +96,7 @@ class ATSScoreDetail(BaseModel):
     missing_keywords: List[str]
     matched_skills: List[str]
     missing_skills: List[str]
+    score_breakdown: Optional[Dict[str, Any]] = None
 
 
 class MatchScoreDetail(BaseModel):
@@ -104,6 +105,9 @@ class MatchScoreDetail(BaseModel):
     match_reasons: List[str]
     strengths: List[str]
     weaknesses: List[str]
+    semantic_similarity_score: Optional[float] = None
+    semantic_weight: Optional[float] = None
+    ats_weight: Optional[float] = None
 
 
 class AISuggestions(BaseModel):
