@@ -111,11 +111,8 @@ function ResumePreview({ resume }) {
           <div style={{ fontSize: '0.75rem', fontWeight: 600, color: '#6B7280', textTransform: 'uppercase', letterSpacing: '0.05em', marginBottom: '0.5rem' }}>
             Detected Skills ({resume.extracted_skills.length})
           </div>
-          <div style={{ display: 'flex', flexWrap: 'wrap', gap: '0.375rem' }}>
-            {resume.extracted_skills.slice(0, 16).map(s => <SkillTag key={s} name={s} type="matched" />)}
-            {resume.extracted_skills.length > 16 && (
-              <span className="tag tag-gray">+{resume.extracted_skills.length - 16} more</span>
-            )}
+          <div style={{ display: 'flex', flexWrap: 'wrap', gap: '0.375rem', maxHeight: '200px', overflowY: 'auto', padding: '0.25rem 0' }}>
+            {resume.extracted_skills.map(s => <SkillTag key={s} name={s} type="matched" />)}
           </div>
         </div>
       )}
