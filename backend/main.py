@@ -57,7 +57,7 @@ app.include_router(company.router, prefix="/api/company", tags=["Company"])
 app.include_router(reports.router, prefix="/api/reports", tags=["Reports"])
 
 
-BUILD_ID = "v2.5-lockfree"
+BUILD_ID = "v3.0-generic-skills"
 
 @app.get("/api/health", tags=["Health"])
 async def health_check():
