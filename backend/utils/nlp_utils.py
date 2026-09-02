@@ -7,69 +7,134 @@ from backend.utils.logger import get_logger
 
 logger = get_logger(__name__)
 
-# ── Skill libraries ───────────────────────────────────────────────────────────
-TECH_SKILLS = {
-    # Programming languages
-    "python", "java", "javascript", "typescript", "c++", "c#", "go", "rust",
-    "kotlin", "swift", "ruby", "php", "scala", "r", "matlab", "sql", "bash",
-    # Data & Analytics
-    "pandas", "numpy", "scipy", "matplotlib", "seaborn", "plotly", "tableau",
-    "power bi", "excel", "google sheets", "looker", "qlik", "metabase",
-    # ML / AI
-    "machine learning", "deep learning", "tensorflow", "pytorch", "keras",
-    "scikit-learn", "sklearn", "nlp", "natural language processing",
-    "computer vision", "reinforcement learning", "hugging face", "langchain",
-    "openai", "gpt", "bert", "transformers", "xgboost", "lightgbm",
+# ── Comprehensive Multi-Domain Skill Taxonomy ──────────────────────────────────
+CANONICAL_MAPPINGS = [
+    # ── Inspection & Testing ──
+    (re.compile(r'\bfit[\-\s]?up\s+inspection\b', re.I), "Fit-up Inspection"),
+    (re.compile(r'\bdimensional?\s+inspection\b', re.I), "Dimensional Inspection"),
+    (re.compile(r'\bweld\s+visual\s+inspection\b', re.I), "Weld Visual Inspection"),
+    (re.compile(r'\bvisual\s+inspection\b', re.I), "Visual Inspection"),
+    (re.compile(r'\bmaterial\s+inspection\b', re.I), "Material Inspection"),
+    (re.compile(r'\bmaterial\s+identification\b', re.I), "Material Identification"),
+    (re.compile(r'\bstage(?:\s+wise)?\s+inspection\b', re.I), "Stage Inspection"),
+    (re.compile(r'\bfinal\s+inspection\b', re.I), "Final Inspection"),
+    (re.compile(r'\bpiping\s+inspection\b', re.I), "Piping Inspection"),
+    (re.compile(r'\bwelding\s+inspection\b', re.I), "Welding Inspection"),
+    (re.compile(r'\bsite\s+inspection\b', re.I), "Site Inspection"),
+    (re.compile(r'\bhydro(?:static)?\s+test(?:ing)?\b', re.I), "Hydro Test"),
+    (re.compile(r'\bpneumatic\s+test(?:ing)?\b', re.I), "Pneumatic Test"),
+    (re.compile(r'\bpressure\s+test(?:ing)?\b', re.I), "Pressure Test"),
+    (re.compile(r'\bhold\s+point(?:\s+clearance)?\b', re.I), "Hold Point Clearance"),
+    (re.compile(r'\bpunch\s+point(?:\s+clearance)?\b', re.I), "Punch Point Clearance"),
+    (re.compile(r'\bsite\s+surveillance\b', re.I), "Site Surveillance"),
+    (re.compile(r'\bloop\s+file\s+prep(?:aration)?\b', re.I), "Loop File Preparation"),
+    (re.compile(r'\brfi\s+prep(?:aration)?\b', re.I), "RFI Preparation"),
+    (re.compile(r'\b(?:reviewing\s+)?wps\b', re.I), "WPS Review"),
+    (re.compile(r'\b(?:reviewing\s+)?pqr\b', re.I), "PQR Review"),
+    (re.compile(r'\bwelder\s+qualification\b', re.I), "Welder Qualification"),
+    (re.compile(r'\bwelding\s+procedure\s+qualification\b', re.I), "Welding Procedure Qualification"),
+    (re.compile(r'\bwelding\s+consumables?\s+inspection\b', re.I), "Welding Consumables Inspection"),
+    (re.compile(r'\bcalibration\s+checks?\b', re.I), "Calibration Checks"),
+    (re.compile(r'\bcarbon\s+steels?\b', re.I), "Carbon Steel"),
+    (re.compile(r'\bstainless\s+steels?\b', re.I), "Stainless Steel"),
+    (re.compile(r'\bclient\s+inspection\b', re.I), "Client Inspection"),
+    (re.compile(r'\b(?:third\s+party\s+inspection|tpi)\b', re.I), "Third Party Inspection / TPI"),
+    (re.compile(r'\b(?:itp|inspection\s+test\s+plan)\b', re.I), "ITP / Inspection Test Plan"),
+    (re.compile(r'\bqc\s+procedures?\b', re.I), "Quality Procedures"),
+    (re.compile(r'\bquality\s+control\b', re.I), "Quality Control"),
+    (re.compile(r'\bqa\s*\/\s*qc\b', re.I), "QA/QC"),
+    (re.compile(r'\b(?:asnt|asndt)\s+level\s+ii\b', re.I), "ASNT Level II"),
+    (re.compile(r'\b(?:asnt|asndt)\s+level\s+iii\b', re.I), "ASNT Level III"),
+    (re.compile(r'\bcswip\s+3\.1\b', re.I), "CSWIP 3.1"),
+    (re.compile(r'\bcswip\s+3\.2\b', re.I), "CSWIP 3.2"),
+    (re.compile(r'\basme\s+b31\.3\b', re.I), "ASME B31.3"),
+    (re.compile(r'\basme\s+section\s+ix\b', re.I), "ASME Section IX"),
+    (re.compile(r'\baws\s+d1\.1\b', re.I), "AWS D1.1"),
+    (re.compile(r'\bapi\s+570\b', re.I), "API 570"),
+    (re.compile(r'\bapi\s+510\b', re.I), "API 510"),
+    (re.compile(r'\bapi\s+653\b', re.I), "API 653"),
+    (re.compile(r'\biso\s+9001\b', re.I), "ISO 9001"),
+    (re.compile(r'\bms\s+excel\b', re.I), "MS Excel"),
+    (re.compile(r'\bms\s+word\b', re.I), "MS Word"),
+    (re.compile(r'\bcrystal\s+reports\b', re.I), "Crystal Reports"),
+    (re.compile(r'\brdlc(?:\s+reports)?\b', re.I), "RDLC Reports"),
+    (re.compile(r'\bt[\-\s]?sql\b', re.I), "T-SQL"),
+    (re.compile(r'\bpower\s+bi\b', re.I), "Power BI"),
+    (re.compile(r'\bms\s+sql(?:\s+server)?\b', re.I), "SQL Server"),
+    (re.compile(r'\brest(?:ful)?\s+api[s]?\b', re.I), "REST APIs"),
+    (re.compile(r'\bci\s*\/\s*cd\b', re.I), "CI/CD"),
+    (re.compile(r'\bmachine\s+learning\b', re.I), "Machine Learning"),
+    (re.compile(r'\bdeep\s+learning\b', re.I), "Deep Learning"),
+    (re.compile(r'\bnatural\s+language\s+processing\b', re.I), "NLP"),
+]
+
+TAXONOMY_DICTIONARY: Dict[str, str] = {
+    # NDT
+    "ndt": "NDT", "nde": "NDE", "pt": "PT", "mt": "MT", "rt": "RT", "ut": "UT", "vt": "VT", "et": "ET",
+    # Welding & Piping
+    "smaw": "SMAW", "saw": "SAW", "gtaw": "GTAW", "fcaw": "FCAW", "tig": "TIG Welding", "mig": "MIG Welding",
+    "wps": "WPS", "pqr": "PQR", "itp": "ITP", "rfi": "RFI", "tpi": "TPI", "piping": "Piping",
+    "heavy fabrication": "Heavy Fabrication", "structural works": "Structural Works",
+    # Programming Languages
+    "python": "Python", "java": "Java", "javascript": "JavaScript", "typescript": "TypeScript",
+    "c++": "C++", "c#": "C#", "go": "Go", "rust": "Rust", "kotlin": "Kotlin", "swift": "Swift",
+    "php": "PHP", "scala": "Scala", "r": "R", "matlab": "MATLAB", "sql": "SQL", "bash": "Bash",
+    # Web & Frameworks
+    "react": "React", "angular": "Angular", "vue": "Vue", "node.js": "Node.js", "nodejs": "Node.js",
+    "express": "Express", "django": "Django", "flask": "Flask", "fastapi": "FastAPI",
+    "spring boot": "Spring Boot", "html": "HTML", "css": "CSS", "graphql": "GraphQL",
     # Databases
-    "mysql", "postgresql", "sqlite", "mongodb", "redis", "cassandra",
-    "elasticsearch", "oracle", "ms sql", "snowflake", "bigquery", "redshift",
-    # Cloud
-    "aws", "azure", "gcp", "google cloud", "docker", "kubernetes", "terraform",
-    "ansible", "jenkins", "ci/cd", "github actions", "gitlab ci",
-    # Web
-    "react", "angular", "vue", "node.js", "express", "django", "flask",
-    "fastapi", "spring boot", "html", "css", "rest api", "graphql",
-    # Data Engineering
-    "spark", "hadoop", "kafka", "airflow", "dbt", "etl", "data pipeline",
-    "data warehouse", "data lake", "databricks",
-    # Other tools
-    "git", "jira", "confluence", "figma", "linux", "windows server",
+    "mysql": "MySQL", "postgresql": "PostgreSQL", "postgres": "PostgreSQL", "sqlite": "SQLite",
+    "mongodb": "MongoDB", "redis": "Redis", "cassandra": "Cassandra", "elasticsearch": "Elasticsearch",
+    "oracle": "Oracle", "snowflake": "Snowflake", "bigquery": "BigQuery", "redshift": "Redshift",
+    # Cloud & DevOps
+    "aws": "AWS", "azure": "Azure", "gcp": "GCP", "docker": "Docker", "kubernetes": "Kubernetes",
+    "terraform": "Terraform", "ansible": "Ansible", "jenkins": "Jenkins", "linux": "Linux", "git": "Git",
+    "github": "GitHub", "gitlab": "GitLab", "jira": "Jira",
+    # Data & AI
+    "pandas": "Pandas", "numpy": "NumPy", "scipy": "SciPy", "matplotlib": "Matplotlib",
+    "seaborn": "Seaborn", "tableau": "Tableau", "power bi": "Power BI", "excel": "Excel",
+    "tensorflow": "TensorFlow", "pytorch": "PyTorch", "keras": "Keras", "scikit-learn": "Scikit-Learn",
+    "spark": "Apache Spark", "hadoop": "Hadoop", "kafka": "Kafka", "airflow": "Airflow",
+    # Engineering
+    "autocad": "AutoCAD", "solidworks": "SolidWorks", "catia": "CATIA", "ansys": "ANSYS",
+    "six sigma": "Six Sigma", "lean manufacturing": "Lean Manufacturing", "hvac": "HVAC",
 }
 
-SOFT_SKILLS = {
-    "communication", "teamwork", "leadership", "problem solving", "critical thinking",
-    "time management", "adaptability", "creativity", "collaboration", "analytical",
-    "detail-oriented", "organized", "proactive", "self-motivated", "multitasking",
-    "presentation", "negotiation", "conflict resolution", "decision making",
-    "emotional intelligence", "stakeholder management", "agile", "scrum",
+SOFT_SKILLS_DICT: Dict[str, str] = {
+    "communication": "Communication", "teamwork": "Teamwork", "leadership": "Leadership",
+    "problem solving": "Problem Solving", "critical thinking": "Critical Thinking",
+    "time management": "Time Management", "adaptability": "Adaptability", "creativity": "Creativity",
+    "collaboration": "Collaboration", "analytical": "Analytical Skills",
+    "detail-oriented": "Detail-Oriented", "detail oriented": "Detail-Oriented",
+    "organized": "Organized", "presentation": "Presentation", "negotiation": "Negotiation",
+    "conflict resolution": "Conflict Resolution", "agile": "Agile", "scrum": "Scrum",
+    "stakeholder management": "Stakeholder Management", "project management": "Project Management",
 }
 
-CERTIFICATIONS = {
-    "aws certified", "azure certified", "google certified", "pmp", "scrum master",
-    "csm", "cpa", "cfa", "cissp", "comptia", "cisco", "ccna", "ccnp",
-    "tensorflow developer", "deep learning specialization", "coursera", "udemy",
-    "microsoft certified", "oracle certified", "salesforce certified",
-}
-
-EDUCATION_KEYWORDS = {
-    "bachelor", "master", "phd", "doctorate", "b.tech", "m.tech", "bca", "mca",
-    "b.sc", "m.sc", "mba", "b.e", "m.e", "b.com", "m.com", "diploma",
-    "associate", "degree", "computer science", "information technology",
-    "data science", "engineering", "mathematics", "statistics",
-}
-
-
-# Pre-compile regex for skills matching using lookarounds to ensure word/alphanumeric boundaries
-_TECH_SKILLS_REGEX = [
-    (skill, re.compile(rf'(?<![a-zA-Z0-9]){re.escape(skill)}(?![a-zA-Z0-9])'))
-    for skill in TECH_SKILLS
+# Pre-compile regex for skills
+_SORTED_TAXONOMY_KEYS = sorted(list(TAXONOMY_DICTIONARY.keys()), key=lambda x: len(x), reverse=True)
+_TAXONOMY_REGEXES = [
+    (k, TAXONOMY_DICTIONARY[k], re.compile(rf'(?<![a-zA-Z0-9]){re.escape(k)}(?![a-zA-Z0-9])', re.I))
+    for k in _SORTED_TAXONOMY_KEYS
 ]
+
+_SORTED_SOFT_KEYS = sorted(list(SOFT_SKILLS_DICT.keys()), key=lambda x: len(x), reverse=True)
 _SOFT_SKILLS_REGEX = [
-    (skill, re.compile(rf'(?<![a-zA-Z0-9]){re.escape(skill)}(?![a-zA-Z0-9])'))
-    for skill in SOFT_SKILLS
+    (k, SOFT_SKILLS_DICT[k], re.compile(rf'(?<![a-zA-Z0-9]){re.escape(k)}(?![a-zA-Z0-9])', re.I))
+    for k in _SORTED_SOFT_KEYS
 ]
 
-# Blacklisted candidate names that are common headings
+BLACKLIST_SKILLS = {
+    'resume', 'curriculum vitae', 'profile', 'summary', 'contact', 'email', 'phone',
+    'address', 'experience', 'education', 'university', 'college', 'institute',
+    'school', 'company', 'project', 'client', 'location', 'role', 'responsibilities',
+    'january', 'february', 'march', 'april', 'may', 'june', 'july', 'august',
+    'september', 'october', 'november', 'december', 'present', 'current', 'till now',
+    'surat', 'hazira', 'india', 'larsen', 'toubro', 'reliance', 'ongc', 'aramco', 'saudi aramco',
+    'details of professional experience', 'about me', 'word'
+}
+
 BLACKLISTED_NAMES = {
     "resume", "curriculum vitae", "curriculum-vitae", "cv", "biodata", "bio-data",
     "portfolio", "profile", "summary", "contact", "information"
@@ -77,31 +142,83 @@ BLACKLISTED_NAMES = {
 
 
 def extract_skills(text: str) -> List[str]:
-    """Extract technical and soft skills from text."""
+    """Extract all technical and domain skills from text with multi-word and standards recognition."""
+    skills_map: Dict[str, str] = {}
     text_lower = text.lower()
-    found_skills = set()
 
-    for skill, rx in _TECH_SKILLS_REGEX:
+    # 1. Canonical Pattern Mappings (Highest precision multi-word domain phrases)
+    for rx, display_name in CANONICAL_MAPPINGS:
+        if rx.search(text):
+            skills_map[display_name.lower()] = display_name
+
+    # 2. Dynamic Technical Standards Regex (ASME, AWS, API, ISO, ASTM, DIN, CSWIP, ASNT, etc.)
+    std_regex = re.compile(r'\b((?:ASME|AWS|API|ISO|ASTM|DIN|TEMA|BS\s*EN|IEEE|IEC|CSWIP|ASNT|ASNDT)\s+(?:Section\s+[IVXLCDM]+|[A-Z0-9]+(?:[\.\-\/][A-Z0-9]+)*))\b', re.I)
+    for m in std_regex.finditer(text):
+        val = m.group(1).strip()
+        val_clean = re.sub(r'[\s\n]+', ' ', val)
+        if len(val_clean) >= 3 and val_clean.lower() not in BLACKLIST_SKILLS:
+            parts = val_clean.split()
+            norm_val = parts[0].upper() + ' ' + ' '.join(parts[1:])
+            skills_map[norm_val.lower()] = norm_val
+
+    # 3. NDT Acronyms (PT, MT, RT, UT, VT, ET)
+    ndt_rx = re.compile(r'(?<![a-zA-Z0-9])(PT|MT|RT|UT|VT|ET)(?![a-zA-Z0-9])')
+    for m in ndt_rx.finditer(text):
+        acronym = m.group(1).upper()
+        skills_map[acronym.lower()] = acronym
+
+    # 4. Standard Technical Taxonomy
+    for key, display_name, rx in _TAXONOMY_REGEXES:
         if rx.search(text_lower):
-            found_skills.add(skill)
+            # If standard AWS D1.1 is in text, don't falsely add standalone cloud "AWS"
+            if key == "aws" and re.search(r'\baws\s+d1\b', text_lower):
+                continue
+            if key not in BLACKLIST_SKILLS:
+                skills_map[key] = display_name
 
-    for skill, rx in _SOFT_SKILLS_REGEX:
+    # 5. Soft Skills
+    for key, display_name, rx in _SOFT_SKILLS_REGEX:
         if rx.search(text_lower):
-            found_skills.add(skill)
+            skills_map[key] = display_name
 
-    return sorted(list(found_skills))
+    # 6. Smart Deduplication: suppress sub-terms when compound version exists
+    suppressed_subterms = set()
+    if "ms excel" in skills_map:
+        suppressed_subterms.add("excel")
+    if "ms word" in skills_map:
+        suppressed_subterms.add("word")
+    if "itp / inspection test plan" in skills_map:
+        suppressed_subterms.add("itp")
+    if "third party inspection / tpi" in skills_map:
+        suppressed_subterms.add("tpi")
+    if "wps review" in skills_map:
+        suppressed_subterms.add("wps")
+    if "pqr review" in skills_map:
+        suppressed_subterms.add("pqr")
+
+    final_list = [
+        skills_map[k] for k in skills_map
+        if k not in suppressed_subterms and k not in BLACKLIST_SKILLS and len(k) >= 2
+    ]
+
+    return sorted(final_list, key=lambda x: x.lower())
 
 
 def extract_tech_skills(text: str) -> List[str]:
-    """Extract only technical/hard skills."""
-    text_lower = text.lower()
-    return sorted([skill for skill, rx in _TECH_SKILLS_REGEX if rx.search(text_lower)])
+    """Extract only technical / domain hard skills."""
+    all_skills = extract_skills(text)
+    soft_names = set(SOFT_SKILLS_DICT.values())
+    return [s for s in all_skills if s not in soft_names]
 
 
 def extract_soft_skills(text: str) -> List[str]:
     """Extract only soft skills."""
     text_lower = text.lower()
-    return sorted([skill for skill, rx in _SOFT_SKILLS_REGEX if rx.search(text_lower)])
+    found = []
+    for key, display_name, rx in _SOFT_SKILLS_REGEX:
+        if rx.search(text_lower):
+            found.append(display_name)
+    return sorted(list(set(found)), key=lambda x: x.lower())
 
 
 def extract_email(text: str) -> str:

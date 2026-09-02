@@ -8,99 +8,206 @@
  * - Rule-based AI Improvement Suggestions
  */
 
-export const TECH_SKILLS = [
-  // Programming languages
-  "python", "java", "javascript", "typescript", "c++", "c#", "go", "rust",
-  "kotlin", "swift", "ruby", "php", "scala", "r", "matlab", "sql", "bash",
-  // Data & Analytics
-  "pandas", "numpy", "scipy", "matplotlib", "seaborn", "plotly", "tableau",
-  "power bi", "excel", "google sheets", "looker", "qlik", "metabase",
-  // ML / AI
-  "machine learning", "deep learning", "tensorflow", "pytorch", "keras",
-  "scikit-learn", "sklearn", "nlp", "natural language processing",
-  "computer vision", "reinforcement learning", "hugging face", "langchain",
-  "openai", "gpt", "bert", "transformers", "xgboost", "lightgbm",
+// ── Comprehensive Multi-Domain Skill Taxonomy ──────────────────────────────────
+export const CANONICAL_MAPPINGS = [
+  // ── Inspection & Testing ──
+  { rx: /\bfit[\-\s]?up\s+inspection\b/i, name: "Fit-up Inspection" },
+  { rx: /\bdimensional?\s+inspection\b/i, name: "Dimensional Inspection" },
+  { rx: /\bweld\s+visual\s+inspection\b/i, name: "Weld Visual Inspection" },
+  { rx: /\bvisual\s+inspection\b/i, name: "Visual Inspection" },
+  { rx: /\bmaterial\s+inspection\b/i, name: "Material Inspection" },
+  { rx: /\bmaterial\s+identification\b/i, name: "Material Identification" },
+  { rx: /\bstage(?:\s+wise)?\s+inspection\b/i, name: "Stage Inspection" },
+  { rx: /\bfinal\s+inspection\b/i, name: "Final Inspection" },
+  { rx: /\bpiping\s+inspection\b/i, name: "Piping Inspection" },
+  { rx: /\bwelding\s+inspection\b/i, name: "Welding Inspection" },
+  { rx: /\bsite\s+inspection\b/i, name: "Site Inspection" },
+  { rx: /\bhydro(?:static)?\s+test(?:ing)?\b/i, name: "Hydro Test" },
+  { rx: /\bpneumatic\s+test(?:ing)?\b/i, name: "Pneumatic Test" },
+  { rx: /\bpressure\s+test(?:ing)?\b/i, name: "Pressure Test" },
+  { rx: /\bhold\s+point(?:\s+clearance)?\b/i, name: "Hold Point Clearance" },
+  { rx: /\bpunch\s+point(?:\s+clearance)?\b/i, name: "Punch Point Clearance" },
+  { rx: /\bsite\s+surveillance\b/i, name: "Site Surveillance" },
+  { rx: /\bloop\s+file\s+prep(?:aration)?\b/i, name: "Loop File Preparation" },
+  { rx: /\brfi\s+prep(?:aration)?\b/i, name: "RFI Preparation" },
+  { rx: /\b(?:reviewing\s+)?wps\b/i, name: "WPS Review" },
+  { rx: /\b(?:reviewing\s+)?pqr\b/i, name: "PQR Review" },
+  { rx: /\bwelder\s+qualification\b/i, name: "Welder Qualification" },
+  { rx: /\bwelding\s+procedure\s+qualification\b/i, name: "Welding Procedure Qualification" },
+  { rx: /\bwelding\s+consumables?\s+inspection\b/i, name: "Welding Consumables Inspection" },
+  { rx: /\bcalibration\s+checks?\b/i, name: "Calibration Checks" },
+  { rx: /\bcarbon\s+steels?\b/i, name: "Carbon Steel" },
+  { rx: /\bstainless\s+steels?\b/i, name: "Stainless Steel" },
+  { rx: /\bclient\s+inspection\b/i, name: "Client Inspection" },
+  { rx: /\b(?:third\s+party\s+inspection|tpi)\b/i, name: "Third Party Inspection / TPI" },
+  { rx: /\b(?:itp|inspection\s+test\s+plan)\b/i, name: "ITP / Inspection Test Plan" },
+  { rx: /\bqc\s+procedures?\b/i, name: "Quality Procedures" },
+  { rx: /\bquality\s+control\b/i, name: "Quality Control" },
+  { rx: /\bqa\s*\/\s*qc\b/i, name: "QA/QC" },
+  { rx: /\b(?:asnt|asndt)\s+level\s+ii\b/i, name: "ASNT Level II" },
+  { rx: /\b(?:asnt|asndt)\s+level\s+iii\b/i, name: "ASNT Level III" },
+  { rx: /\bcswip\s+3\.1\b/i, name: "CSWIP 3.1" },
+  { rx: /\bcswip\s+3\.2\b/i, name: "CSWIP 3.2" },
+  { rx: /\basme\s+b31\.3\b/i, name: "ASME B31.3" },
+  { rx: /\basme\s+section\s+ix\b/i, name: "ASME Section IX" },
+  { rx: /\baws\s+d1\.1\b/i, name: "AWS D1.1" },
+  { rx: /\bapi\s+570\b/i, name: "API 570" },
+  { rx: /\bapi\s+510\b/i, name: "API 510" },
+  { rx: /\bapi\s+653\b/i, name: "API 653" },
+  { rx: /\biso\s+9001\b/i, name: "ISO 9001" },
+  { rx: /\bms\s+excel\b/i, name: "MS Excel" },
+  { rx: /\bms\s+word\b/i, name: "MS Word" },
+  { rx: /\bcrystal\s+reports\b/i, name: "Crystal Reports" },
+  { rx: /\brdlc(?:\s+reports)?\b/i, name: "RDLC Reports" },
+  { rx: /\bt[\-\s]?sql\b/i, name: "T-SQL" },
+  { rx: /\bpower\s+bi\b/i, name: "Power BI" },
+  { rx: /\bms\s+sql(?:\s+server)?\b/i, name: "SQL Server" },
+  { rx: /\brest(?:ful)?\s+api[s]?\b/i, name: "REST APIs" },
+  { rx: /\bci\s*\/\s*cd\b/i, name: "CI/CD" },
+  { rx: /\bmachine\s+learning\b/i, name: "Machine Learning" },
+  { rx: /\bdeep\s+learning\b/i, name: "Deep Learning" },
+  { rx: /\bnatural\s+language\s+processing\b/i, name: "NLP" },
+]
+
+export const TAXONOMY_DICTIONARY = {
+  // NDT
+  "ndt": "NDT", "nde": "NDE", "pt": "PT", "mt": "MT", "rt": "RT", "ut": "UT", "vt": "VT", "et": "ET",
+  // Welding & Piping
+  "smaw": "SMAW", "saw": "SAW", "gtaw": "GTAW", "fcaw": "FCAW", "tig": "TIG Welding", "mig": "MIG Welding",
+  "wps": "WPS", "pqr": "PQR", "itp": "ITP", "rfi": "RFI", "tpi": "TPI", "piping": "Piping",
+  "heavy fabrication": "Heavy Fabrication", "structural works": "Structural Works",
+  // Programming Languages
+  "python": "Python", "java": "Java", "javascript": "JavaScript", "typescript": "TypeScript",
+  "c++": "C++", "c#": "C#", "go": "Go", "rust": "Rust", "kotlin": "Kotlin", "swift": "Swift",
+  "php": "PHP", "scala": "Scala", "r": "R", "matlab": "MATLAB", "sql": "SQL", "bash": "Bash",
+  // Web & Frameworks
+  "react": "React", "angular": "Angular", "vue": "Vue", "node.js": "Node.js", "nodejs": "Node.js",
+  "express": "Express", "django": "Django", "flask": "Flask", "fastapi": "FastAPI",
+  "spring boot": "Spring Boot", "html": "HTML", "css": "CSS", "graphql": "GraphQL",
   // Databases
-  "mysql", "postgresql", "sqlite", "mongodb", "redis", "cassandra",
-  "elasticsearch", "oracle", "ms sql", "snowflake", "bigquery", "redshift",
-  // Cloud
-  "aws", "azure", "gcp", "google cloud", "docker", "kubernetes", "terraform",
-  "ansible", "jenkins", "ci/cd", "github actions", "gitlab ci",
-  // Web
-  "react", "angular", "vue", "node.js", "express", "django", "flask",
-  "fastapi", "spring boot", "html", "css", "rest api", "graphql",
-  // Data Engineering
-  "spark", "hadoop", "kafka", "airflow", "dbt", "etl", "data pipeline",
-  "data warehouse", "data lake", "databricks",
-  // Other tools
-  "git", "jira", "confluence", "figma", "linux", "windows server",
-]
+  "mysql": "MySQL", "postgresql": "PostgreSQL", "postgres": "PostgreSQL", "sqlite": "SQLite",
+  "mongodb": "MongoDB", "redis": "Redis", "cassandra": "Cassandra", "elasticsearch": "Elasticsearch",
+  "oracle": "Oracle", "snowflake": "Snowflake", "bigquery": "BigQuery", "redshift": "Redshift",
+  // Cloud & DevOps
+  "aws": "AWS", "azure": "Azure", "gcp": "GCP", "docker": "Docker", "kubernetes": "Kubernetes",
+  "terraform": "Terraform", "ansible": "Ansible", "jenkins": "Jenkins", "linux": "Linux", "git": "Git",
+  "github": "GitHub", "gitlab": "GitLab", "jira": "Jira",
+  // Data & AI
+  "pandas": "Pandas", "numpy": "NumPy", "scipy": "SciPy", "matplotlib": "Matplotlib",
+  "seaborn": "Seaborn", "tableau": "Tableau", "power bi": "Power BI", "excel": "Excel",
+  "tensorflow": "TensorFlow", "pytorch": "PyTorch", "keras": "Keras", "scikit-learn": "Scikit-Learn",
+  "spark": "Apache Spark", "hadoop": "Hadoop", "kafka": "Kafka", "airflow": "Airflow",
+  // Engineering
+  "autocad": "AutoCAD", "solidworks": "SolidWorks", "catia": "CATIA", "ansys": "ANSYS",
+  "six sigma": "Six Sigma", "lean manufacturing": "Lean Manufacturing", "hvac": "HVAC",
+}
 
-export const SOFT_SKILLS = [
-  "communication", "teamwork", "leadership", "problem solving", "critical thinking",
-  "time management", "adaptability", "creativity", "collaboration", "analytical",
-  "detail-oriented", "organized", "proactive", "self-motivated", "multitasking",
-  "presentation", "negotiation", "conflict resolution", "decision making",
-  "emotional intelligence", "stakeholder management", "agile", "scrum",
-]
+export const SOFT_SKILLS_DICT = {
+  "communication": "Communication", "teamwork": "Teamwork", "leadership": "Leadership",
+  "problem solving": "Problem Solving", "critical thinking": "Critical Thinking",
+  "time management": "Time Management", "adaptability": "Adaptability", "creativity": "Creativity",
+  "collaboration": "Collaboration", "analytical": "Analytical Skills",
+  "detail-oriented": "Detail-Oriented", "detail oriented": "Detail-Oriented",
+  "organized": "Organized", "presentation": "Presentation", "negotiation": "Negotiation",
+  "conflict resolution": "Conflict Resolution", "agile": "Agile", "scrum": "Scrum",
+  "stakeholder management": "Stakeholder Management", "project management": "Project Management",
+}
 
-const STOP_WORDS = new Set([
-  "the", "and", "or", "in", "at", "to", "of", "a", "an", "is", "are",
-  "was", "were", "be", "been", "have", "has", "had", "do", "does", "did",
-  "with", "for", "on", "by", "from", "this", "that", "they", "we", "you",
-  "will", "would", "could", "should", "may", "might", "can", "our", "your",
-  "their", "its", "as", "up", "out", "so", "if", "not", "no", "but", "also",
-  "about", "all", "after", "again", "against", "between", "both", "down",
-  "each", "few", "more", "most", "other", "some", "such", "than", "too",
-  "very", "what", "when", "where", "which", "while", "who", "whom", "why",
-  "how", "me", "my", "myself", "we'd", "we'll", "we're", "we've", "he",
-  "she", "it", "them", "then", "there", "these", "those", "through",
-  "under", "until", "into", "over", "just", "now", "only", "same", "use",
+export const TECH_SKILLS = Object.keys(TAXONOMY_DICTIONARY)
+export const SOFT_SKILLS = Object.keys(SOFT_SKILLS_DICT)
+
+const BLACKLIST_SKILLS = new Set([
+  'resume', 'curriculum vitae', 'profile', 'summary', 'contact', 'email', 'phone',
+  'address', 'experience', 'education', 'university', 'college', 'institute',
+  'school', 'company', 'project', 'client', 'location', 'role', 'responsibilities',
+  'january', 'february', 'march', 'april', 'may', 'june', 'july', 'august',
+  'september', 'october', 'november', 'december', 'present', 'current', 'till now',
+  'surat', 'hazira', 'india', 'larsen', 'toubro', 'reliance', 'ongc', 'aramco', 'saudi aramco',
+  'details of professional experience', 'about me', 'word'
 ])
 
-export function extractKeywords(text, topN = 50) {
-  const textLower = (text || '').toLowerCase()
-  const words = textLower.match(/\b[a-z][a-z\-\.]{2,}\b/g) || []
-  const wordFreq = {}
-  for (const w of words) {
-    if (!STOP_WORDS.has(w)) {
-      wordFreq[w] = (wordFreq[w] || 0) + 1
+export function extractSkills(text) {
+  const skillsMap = {}
+  const textStr = text || ''
+  const textLower = textStr.toLowerCase()
+
+  // 1. Canonical Pattern Mappings (Highest precision multi-word domain phrases)
+  for (const item of CANONICAL_MAPPINGS) {
+    if (item.rx.test(textStr)) {
+      skillsMap[item.name.toLowerCase()] = item.name
     }
   }
-  return Object.entries(wordFreq)
-    .sort((a, b) => b[1] - a[1])
-    .slice(0, topN)
-    .map(([w]) => w)
+
+  // 2. Dynamic Technical Standards Regex (ASME, AWS, API, ISO, ASTM, DIN, CSWIP, ASNT, etc.)
+  const stdRegex = /\b((?:ASME|AWS|API|ISO|ASTM|DIN|TEMA|BS\s*EN|IEEE|IEC|CSWIP|ASNT|ASNDT)\s+(?:Section\s+[IVXLCDM]+|[A-Z0-9]+(?:[\.\-\/][A-Z0-9]+)*))\b/gi
+  let m
+  while ((m = stdRegex.exec(textStr)) !== null) {
+    const val = m[1].trim().replace(/\s+/g, ' ')
+    if (val.length >= 3 && !BLACKLIST_SKILLS.has(val.toLowerCase())) {
+      const parts = val.split(' ')
+      const normVal = parts[0].toUpperCase() + ' ' + parts.slice(1).join(' ')
+      skillsMap[normVal.toLowerCase()] = normVal
+    }
+  }
+
+  // 3. NDT Acronyms (PT, MT, RT, UT, VT, ET)
+  const ndtRx = /(?<![a-zA-Z0-9])(PT|MT|RT|UT|VT|ET)(?![a-zA-Z0-9])/g
+  while ((m = ndtRx.exec(textStr)) !== null) {
+    const acronym = m[1].toUpperCase()
+    skillsMap[acronym.toLowerCase()] = acronym
+  }
+
+  // 4. Standard Technical Taxonomy
+  for (const [key, displayName] of Object.entries(TAXONOMY_DICTIONARY)) {
+    const rx = new RegExp(`(?<![a-zA-Z0-9])${key.replace(/[.*+?^${}()|[\]\\]/g, '\\$&')}(?![a-zA-Z0-9])`, 'i')
+    if (rx.test(textLower)) {
+      if (key === 'aws' && /\baws\s+d1\b/i.test(textLower)) continue
+      if (!BLACKLIST_SKILLS.has(key)) {
+        skillsMap[key] = displayName
+      }
+    }
+  }
+
+  // 5. Soft Skills
+  for (const [key, displayName] of Object.entries(SOFT_SKILLS_DICT)) {
+    const rx = new RegExp(`(?<![a-zA-Z0-9])${key.replace(/[.*+?^${}()|[\]\\]/g, '\\$&')}(?![a-zA-Z0-9])`, 'i')
+    if (rx.test(textLower)) {
+      skillsMap[key] = displayName
+    }
+  }
+
+  // 6. Smart Deduplication
+  const suppressed = new Set()
+  if (skillsMap['ms excel']) suppressed.add('excel')
+  if (skillsMap['ms word']) suppressed.add('word')
+  if (skillsMap['itp / inspection test plan']) suppressed.add('itp')
+  if (skillsMap['third party inspection / tpi']) suppressed.add('tpi')
+  if (skillsMap['wps review']) suppressed.add('wps')
+  if (skillsMap['pqr review']) suppressed.add('pqr')
+
+  const finalList = Object.keys(skillsMap)
+    .filter(k => !suppressed.has(k) && !BLACKLIST_SKILLS.has(k) && k.length >= 2)
+    .map(k => skillsMap[k])
+
+  return finalList.sort((a, b) => a.toLowerCase().localeCompare(b.toLowerCase()))
 }
 
 export function extractTechSkills(text) {
-  const textLower = (text || '').toLowerCase()
-  const found = new Set()
-  for (const skill of TECH_SKILLS) {
-    const rx = new RegExp(`(?<![a-zA-Z0-9])${skill.replace(/[.*+?^${}()|[\]\\]/g, '\\$&')}(?![a-zA-Z0-9])`, 'i')
-    if (rx.test(textLower)) {
-      found.add(skill)
-    }
-  }
-  return Array.from(found).sort()
+  const allSkills = extractSkills(text)
+  const softValues = new Set(Object.values(SOFT_SKILLS_DICT))
+  return allSkills.filter(s => !softValues.has(s))
 }
 
 export function extractSoftSkills(text) {
   const textLower = (text || '').toLowerCase()
-  const found = new Set()
-  for (const skill of SOFT_SKILLS) {
-    const rx = new RegExp(`(?<![a-zA-Z0-9])${skill.replace(/[.*+?^${}()|[\]\\]/g, '\\$&')}(?![a-zA-Z0-9])`, 'i')
+  const found = []
+  for (const [key, displayName] of Object.entries(SOFT_SKILLS_DICT)) {
+    const rx = new RegExp(`(?<![a-zA-Z0-9])${key.replace(/[.*+?^${}()|[\]\\]/g, '\\$&')}(?![a-zA-Z0-9])`, 'i')
     if (rx.test(textLower)) {
-      found.add(skill)
+      found.push(displayName)
     }
   }
-  return Array.from(found).sort()
-}
-
-export function extractSkills(text) {
-  const tech = extractTechSkills(text)
-  const soft = extractSoftSkills(text)
-  return Array.from(new Set([...tech, ...soft])).sort()
+  return Array.from(new Set(found)).sort((a, b) => a.toLowerCase().localeCompare(b.toLowerCase()))
 }
 
 function computeTfIdfCosine(text1, text2) {
