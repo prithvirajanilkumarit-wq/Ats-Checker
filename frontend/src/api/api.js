@@ -1,5 +1,5 @@
 import axios from 'axios'
-import { computeClientAtsAnalysis, extractTechSkills } from '../services/clientAtsAnalyzer'
+import { computeClientAtsAnalysis, extractTechSkills, extractSkills } from '../services/clientAtsAnalyzer'
 
 const API = axios.create({
   baseURL: '/api',
@@ -25,16 +25,26 @@ API.interceptors.response.use(
 let LAST_ANALYSIS_RESULT = null
 
 // ── Resume APIs ────────────────────────────────────────────────
-export const uploadResume = (file, onProgress) => {
+export const uploadResume = async (file, onProgress) => {
   const form = new FormData()
   form.append('file', file)
-  return API.post('/resume/upload', form, {
+  const res = await API.post('/resume/upload', form, {
     headers: { 'Content-Type': 'multipart/form-data' },
     timeout: 30000,
     onUploadProgress: (e) => {
       if (onProgress && e.total) onProgress(Math.round((e.loaded / e.total) * 100))
     },
   })
+
+  // Ensure extracted_skills is enriched using authoritative multi-domain extractor on resume raw_text
+  if (res?.data && res.data.raw_text) {
+    const enrichedSkills = extractSkills(res.data.raw_text)
+    if (enrichedSkills && enrichedSkills.length > 0) {
+      res.data.extracted_skills = enrichedSkills
+    }
+  }
+
+  return res
 }
 
 export const getResume = (id) => API.get(`/resume/${id}`)
