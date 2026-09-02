@@ -117,74 +117,88 @@ export const getAnalysis = async (id) => {
 
 export const getDashboardData = async (analysisId) => {
   try {
-    return await API.get(`/analysis/${analysisId}/dashboard`, { timeout: 4000 })
-  } catch {
-    const res = LAST_ANALYSIS_RESULT || computeClientAtsAnalysis()
-    const ats = res.ats_score || {}
-    const match = res.match_score || {}
+    const res = await API.get(`/analysis/${analysisId}/dashboard`, { timeout: 4000 })
+    if (res?.data && typeof res.data === 'object' && res.data.ats_score !== undefined && Array.isArray(res.data.radar_data)) {
+      return res
+    }
+  } catch (err) {
+    console.warn('Backend getDashboardData note:', err?.message)
+  }
 
-    const radar_data = [
-      { metric: "Skills", score: ats.skills_match_score || 75, fullMark: 100 },
-      { metric: "Experience", score: ats.experience_match_score || 80, fullMark: 100 },
-      { metric: "Education", score: ats.education_match_score || 90, fullMark: 100 },
-      { metric: "Keywords", score: ats.keyword_match_score || 70, fullMark: 100 },
-      { metric: "Formatting", score: ats.formatting_score || 95, fullMark: 100 },
-      { metric: "Soft Skills", score: ats.soft_skills_score || 65, fullMark: 100 },
-    ]
+  const res = LAST_ANALYSIS_RESULT || computeClientAtsAnalysis()
+  const ats = res.ats_score || {}
+  const match = res.match_score || {}
 
-    const bar_data = [
-      { name: "ATS Score", value: ats.overall_ats_score || 78, fill: "#1E40AF" },
-      { name: "Match Score", value: match.match_score || 75, fill: "#3B82F6" },
-      { name: "Skills", value: ats.skills_match_score || 75, fill: "#60A5FA" },
-      { name: "Experience", value: ats.experience_match_score || 80, fill: "#93C5FD" },
-      { name: "Education", value: ats.education_match_score || 90, fill: "#BFDBFE" },
-      { name: "Keywords", value: ats.keyword_match_score || 70, fill: "#DBEAFE" },
-    ]
+  const radar_data = [
+    { metric: "Skills", score: Number(ats.skills_match_score) || 75, fullMark: 100 },
+    { metric: "Experience", score: Number(ats.experience_match_score) || 80, fullMark: 100 },
+    { metric: "Education", score: Number(ats.education_match_score) || 90, fullMark: 100 },
+    { metric: "Keywords", score: Number(ats.keyword_match_score) || 70, fullMark: 100 },
+    { metric: "Formatting", score: Number(ats.formatting_score) || 95, fullMark: 100 },
+    { metric: "Soft Skills", score: Number(ats.soft_skills_score) || 65, fullMark: 100 },
+  ]
 
-    return {
-      data: {
-        ats_score: ats.overall_ats_score,
-        match_score: match.match_score,
-        match_category: match.match_category,
-        skills_match: ats.skills_match_score,
-        experience_match: ats.experience_match_score,
-        education_match: ats.education_match_score,
-        keyword_match: ats.keyword_match_score,
-        formatting_score: ats.formatting_score,
-        matched_skills: ats.matched_skills || [],
-        missing_skills: ats.missing_skills || [],
-        matched_keywords: ats.matched_keywords || [],
-        missing_keywords: ats.missing_keywords || [],
-        strengths: match.strengths || [],
-        weaknesses: match.weaknesses || [],
-        suggestions: res.suggestions || {},
-        company_rating: null,
-        radar_data,
-        bar_data,
-      }
+  const bar_data = [
+    { name: "ATS Score", value: Number(ats.overall_ats_score) || 78, fill: "#1E40AF" },
+    { name: "Match Score", value: Number(match.match_score) || 75, fill: "#3B82F6" },
+    { name: "Skills", value: Number(ats.skills_match_score) || 75, fill: "#60A5FA" },
+    { name: "Experience", value: Number(ats.experience_match_score) || 80, fill: "#93C5FD" },
+    { name: "Education", value: Number(ats.education_match_score) || 90, fill: "#BFDBFE" },
+    { name: "Keywords", value: Number(ats.keyword_match_score) || 70, fill: "#DBEAFE" },
+  ]
+
+  return {
+    data: {
+      ats_score: Number(ats.overall_ats_score) || 0,
+      match_score: Number(match.match_score) || 0,
+      match_category: match.match_category || 'Low Match',
+      skills_match: Number(ats.skills_match_score) || 0,
+      experience_match: Number(ats.experience_match_score) || 0,
+      education_match: Number(ats.education_match_score) || 0,
+      keyword_match: Number(ats.keyword_match_score) || 0,
+      formatting_score: Number(ats.formatting_score) || 0,
+      matched_skills: Array.isArray(ats.matched_skills) ? ats.matched_skills : [],
+      missing_skills: Array.isArray(ats.missing_skills) ? ats.missing_skills : [],
+      matched_keywords: Array.isArray(ats.matched_keywords) ? ats.matched_keywords : [],
+      missing_keywords: Array.isArray(ats.missing_keywords) ? ats.missing_keywords : [],
+      strengths: Array.isArray(match.strengths) ? match.strengths : [],
+      weaknesses: Array.isArray(match.weaknesses) ? match.weaknesses : [],
+      suggestions: res.suggestions || {},
+      company_rating: null,
+      radar_data,
+      bar_data,
     }
   }
 }
 
 export const listAnalyses = async () => {
   try {
-    return await API.get('/analysis/')
-  } catch {
-    const res = LAST_ANALYSIS_RESULT || computeClientAtsAnalysis()
+    const res = await API.get('/analysis/', { timeout: 4000 })
+    if (Array.isArray(res?.data)) {
+      return res
+    }
+  } catch (err) {
+    console.warn('Backend listAnalyses note:', err?.message)
+  }
+
+  if (LAST_ANALYSIS_RESULT) {
+    const res = LAST_ANALYSIS_RESULT
     return {
       data: [
         {
-          id: 1,
-          resume_id: 1,
-          job_description_id: 1,
+          id: res.id || 1,
+          resume_id: res.resume_id || 1,
+          job_description_id: res.job_description_id || 1,
           ats_score: res.ats_score?.overall_ats_score || 78,
           match_score: res.match_score?.match_score || 75,
           match_category: res.match_score?.match_category || 'High Match',
-          created_at: new Date().toISOString(),
+          created_at: res.created_at || new Date().toISOString(),
         }
       ]
     }
   }
+
+  return { data: [] }
 }
 
 // ── Company APIs ───────────────────────────────────────────────
