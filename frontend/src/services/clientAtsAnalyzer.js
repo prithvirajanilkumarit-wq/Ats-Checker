@@ -210,6 +210,35 @@ export function extractSoftSkills(text) {
   return Array.from(new Set(found)).sort((a, b) => a.toLowerCase().localeCompare(b.toLowerCase()))
 }
 
+export const STOP_WORDS = new Set([
+  "the", "and", "or", "in", "at", "to", "of", "a", "an", "is", "are",
+  "was", "were", "be", "been", "have", "has", "had", "do", "does", "did",
+  "with", "for", "on", "by", "from", "this", "that", "they", "we", "you",
+  "will", "would", "could", "should", "may", "might", "can", "our", "your",
+  "their", "its", "as", "up", "out", "so", "if", "not", "no", "but", "also",
+  "about", "all", "after", "again", "against", "between", "both", "down",
+  "each", "few", "more", "most", "other", "some", "such", "than", "too",
+  "very", "what", "when", "where", "which", "while", "who", "whom", "why",
+  "how", "me", "my", "myself", "we'd", "we'll", "we're", "we've", "he",
+  "she", "it", "them", "then", "there", "these", "those", "through",
+  "under", "until", "into", "over", "just", "now", "only", "same", "use",
+])
+
+export function extractKeywords(text, topN = 50) {
+  const textLower = (text || '').toLowerCase()
+  const words = textLower.match(/\b[a-z][a-z\-\.]{2,}\b/g) || []
+  const wordFreq = {}
+  for (const w of words) {
+    if (!STOP_WORDS.has(w)) {
+      wordFreq[w] = (wordFreq[w] || 0) + 1
+    }
+  }
+  return Object.entries(wordFreq)
+    .sort((a, b) => b[1] - a[1])
+    .slice(0, topN)
+    .map(([w]) => w)
+}
+
 function computeTfIdfCosine(text1, text2) {
   if (!text1?.trim() || !text2?.trim()) return 0.0
   const words1 = (text1.slice(0, 4000).toLowerCase().match(/\b[a-zA-Z]{2,}\b/g) || []).filter(w => !STOP_WORDS.has(w))
